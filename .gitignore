@@ -1,0 +1,34 @@
+# Build
+dist/
+.next/
+out/
+build/
+keys/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Env
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Turborepo
+.turbo/
+
+#Tasks
+tasks.md
+
+# Local planning docs
+documentation/
