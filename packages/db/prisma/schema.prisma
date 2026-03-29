@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  github_id   BigInt   @unique
+  login       String
+  avatar_url  String?
+  team_id     String?  @db.Uuid
+  team        Team?    @relation(fields: [team_id], references: [id])
+  created_at  DateTime @default(now()) @db.Timestamptz()
+  
+  pull_requests PullRequest[]
+  reviews       Review[]
+
+  @@map("users")
+}
+
+model Team {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  github_id   BigInt   @unique
+  name        String
+  org         String
+  users       User[]
+
+  @@map("teams")
+}
+
+model Repository {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  github_id   BigInt   @unique
+  full_name   String
+  owner       String
+  created_at  DateTime @default(now()) @db.Timestamptz()
+  
+  pull_requests PullRequest[]
+
+  @@map("repositories")
+}
+
+model PullRequest {
+  id                    String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  github_id             BigInt
+  repo_id               String      @db.Uuid
+  repository            Repository  @relation(fields: [repo_id], references: [id])
+  author_id             String?     @db.Uuid
+  author                User?       @relation(fields: [author_id], references: [id])
+  number                Int
+  title                 String
+  state                 String      // open | closed | merged
+  draft                 Boolean     @default(false)
+  created_at            DateTime    @db.Timestamptz()
+  updated_at            DateTime?   @db.Timestamptz()
+  closed_at             DateTime?   @db.Timestamptz()
+  merged_at             DateTime?   @db.Timestamptz()
+  first_review_at       DateTime?   @db.Timestamptz()
+  review_latency_mins   Int?
+  merge_time_mins       Int?
+  lifecycle_mins        Int?
+  health_grade          String?     @db.Char(1) // A, B, C, F
+  is_idle               Boolean     @default(false)
+  
+  reviews               Review[]
+
+  @@unique([repo_id, number])
+  @@index([created_at(sort: Desc)])
+  @@index([repo_id])
+  @@index([author_id])
+  @@index([state])
+  @@map("pull_requests")
+}
+
+model Review {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pr_id        String      @db.Uuid
+  pull_request PullRequest @relation(fields: [pr_id], references: [id])
+  reviewer_id  String      @db.Uuid
+  reviewer     User        @relation(fields: [reviewer_id], references: [id])
+  state        String      // approved | changes_requested | commented
+  submitted_at DateTime    @db.Timestamptz()
+
+  @@index([pr_id])
+  @@index([submitted_at(sort: Desc)])
+  @@map("reviews")
+}
+
+model Event {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  idempotency_key  String   @unique
+  event_type       String
+  processed_at     DateTime @default(now()) @db.Timestamptz()
+  payload_hash     String
+
+  @@map("events")
+}
