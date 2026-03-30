@@ -1,0 +1,27 @@
+{
+  "name": "auditor",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon src/worker.ts",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "start": "node dist/worker.js"
+  },
+  "dependencies": {
+    "@gitflow/db": "*",
+    "@gitflow/queue": "*",
+    "@gitflow/shared": "*",
+    "@octokit/auth-app": "^6.0.4",
+    "@octokit/graphql": "^8.1.0",
+    "bullmq": "^5.7.4",
+    "dotenv": "^16.4.5",
+    "ioredis": "^5.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
