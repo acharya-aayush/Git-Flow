@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 18% 10%;
+    --foreground: 210 17% 91%;
+    --card: 216 20% 13%;
+    --card-foreground: 210 17% 91%;
+    --popover: 216 20% 13%;
+    --popover-foreground: 210 17% 91%;
+    --primary: 212 100% 67%;
+    --primary-foreground: 223 31% 9%;
+    --secondary: 217 18% 20%;
+    --secondary-foreground: 210 17% 91%;
+    --muted: 217 18% 20%;
+    --muted-foreground: 215 14% 65%;
+    --accent: 212 100% 67%;
+    --accent-foreground: 223 31% 9%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 17% 91%;
+    --border: 217 13% 28%;
+    --input: 217 13% 28%;
+    --ring: 212 100% 67%;
+    --radius: 0.75rem;
+
+    --tremor-brand-faint: #1b2532;
+    --tremor-brand-muted: #1f3b63;
+    --tremor-brand-subtle: #316dca;
+    --tremor-brand-DEFAULT: #58a6ff;
+    --tremor-brand-emphasis: #79c0ff;
+    --tremor-brand-inverted: #0d1117;
+    --tremor-background-muted: #161b22;
+    --tremor-background-subtle: #0d1117;
+    --tremor-background-DEFAULT: #161b22;
+    --tremor-background-emphasis: #f0f6fc;
+    --tremor-border-DEFAULT: #30363d;
+    --tremor-ring-DEFAULT: #30363d;
+    --tremor-content-subtle: #8b949e;
+    --tremor-content-DEFAULT: #c9d1d9;
+    --tremor-content-emphasis: #f0f6fc;
+    --tremor-content-strong: #f0f6fc;
+    --tremor-content-inverted: #0d1117;
+  }
+
+  .dark {
+    --background: 220 18% 10%;
+    --foreground: 210 17% 91%;
+    --card: 216 20% 13%;
+    --card-foreground: 210 17% 91%;
+    --popover: 216 20% 13%;
+    --popover-foreground: 210 17% 91%;
+    --primary: 212 100% 67%;
+    --primary-foreground: 223 31% 9%;
+    --secondary: 217 18% 20%;
+    --secondary-foreground: 210 17% 91%;
+    --muted: 217 18% 20%;
+    --muted-foreground: 215 14% 65%;
+    --accent: 212 100% 67%;
+    --accent-foreground: 223 31% 9%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 17% 91%;
+    --border: 217 13% 28%;
+    --input: 217 13% 28%;
+    --ring: 212 100% 67%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    background-image: radial-gradient(circle at 80% -20%, rgba(88, 166, 255, 0.08), transparent 35%);
+    background-color: #0d1117;
+  }
+
+  .metric-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(166, 202, 214, 0.3);
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(7, 20, 26, 0.4);
+  }
+}
+
+@layer components {
+  .panel {
+    @apply rounded-xl border border-border/90 bg-card shadow-[0_12px_30px_-24px_rgba(0,0,0,0.7)];
+  }
+
+  .panel-header {
+    @apply border-b border-border/70 px-5 py-4;
+  }
+
+  .panel-body {
+    @apply p-5;
+  }
+}

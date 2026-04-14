@@ -1,0 +1,41 @@
+{
+  "name": "cockpit",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@gitflow/db": "^1.0.0",
+    "@gitflow/shared": "*",
+    "@heroicons/react": "^2.1.3",
+    "@tremor/react": "^3.17.0",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "lucide-react": "^0.378.0",
+    "next": "16.2.4",
+    "react": "^18",
+    "react-dom": "^18",
+    "recharts": "^2.12.7",
+    "tailwind-merge": "^2.3.0",
+    "tailwindcss-animate": "^1.0.7",
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  },
+  "overrides": {
+    "lodash": "4.18.1"
+  }
+}
