@@ -1,5 +1,4 @@
 import { createAppAuth } from '@octokit/auth-app';
-import { Octokit } from '@octokit/rest';
 import { PrismaClient } from '@prisma/client';
 import * as dotenv from 'dotenv';
 import path from 'path';
@@ -10,6 +9,8 @@ const prisma = new PrismaClient();
 
 async function sync() {
   console.log('Starting historical data sync...');
+
+  const { Octokit } = await import('@octokit/rest');
 
   const appId = process.env.GITHUB_APP_ID;
   const privateKey = process.env.GITHUB_PRIVATE_KEY?.replace(/\\n/g, '\n');
