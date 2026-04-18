@@ -22,6 +22,7 @@
     "clean": "turbo run clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md}\"",
+    "sync": "npx ts-node scripts/sync.ts",
     "db:push": "turbo run db:push",
     "db:generate": "turbo run db:generate"
   },

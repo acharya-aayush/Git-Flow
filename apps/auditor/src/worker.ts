@@ -23,6 +23,8 @@ import { processPullRequestClosed } from './processors/pr-closed';
 import { processPullRequestReview } from './processors/pr-review';
 import { processPushEvent } from './processors/push';
 import { Redis } from 'ioredis';
+import { spawn } from 'node:child_process';
+import path from 'node:path';
 import dotenv from 'dotenv';
 dotenv.config({ path: '../../.env' }); // Only for dev
 
@@ -30,8 +32,71 @@ const db = new PrismaClient();
 const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
 const connection = getRedisConnectionOptions(redisUrl);
 const publisher = new Redis(redisUrl);
+const repoRoot = path.resolve(__dirname, '../../..');
+const autoSyncEnabled = (process.env.AUTO_SYNC_ENABLED || 'true').toLowerCase() !== 'false';
+const autoSyncRunOnBoot = (process.env.AUTO_SYNC_RUN_ON_BOOT || 'true').toLowerCase() !== 'false';
+const autoSyncIntervalMinsRaw = Number(process.env.AUTO_SYNC_INTERVAL_MINUTES || '15');
+const autoSyncIntervalMins = Number.isFinite(autoSyncIntervalMinsRaw)
+  ? Math.max(1, autoSyncIntervalMinsRaw)
+  : 15;
+
+let syncInProgress = false;
 
 console.log('🚀 Starting Auditor Worker...');
+
+function runAutoSync(trigger: 'startup' | 'interval') {
+  if (syncInProgress) {
+    console.log(`[Auditor] Auto-sync skipped (${trigger}): previous sync still running`);
+    return;
+  }
+
+  if (!process.env.GITHUB_APP_ID || !process.env.GITHUB_PRIVATE_KEY) {
+    console.warn(`[Auditor] Auto-sync skipped (${trigger}): missing GitHub app credentials`);
+    return;
+  }
+
+  const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+
+  syncInProgress = true;
+  console.log(`[Auditor] Auto-sync starting (${trigger})`);
+
+  const child = spawn(npmCmd, ['run', 'sync'], {
+    cwd: repoRoot,
+    env: process.env,
+    stdio: 'inherit',
+  });
+
+  child.on('error', error => {
+    syncInProgress = false;
+    console.error(`[Auditor] Auto-sync failed to start (${trigger}):`, error);
+  });
+
+  child.on('close', code => {
+    syncInProgress = false;
+
+    if (code === 0) {
+      console.log(`[Auditor] Auto-sync completed (${trigger})`);
+      return;
+    }
+
+    console.error(`[Auditor] Auto-sync failed (${trigger}) with exit code ${code ?? 'unknown'}`);
+  });
+}
+
+if (autoSyncEnabled) {
+  console.log(`[Auditor] Auto-sync enabled: every ${autoSyncIntervalMins} minute(s)`);
+
+  if (autoSyncRunOnBoot) {
+    runAutoSync('startup');
+  }
+
+  const timer = setInterval(() => {
+    runAutoSync('interval');
+  }, autoSyncIntervalMins * 60_000);
+  timer.unref();
+} else {
+  console.log('[Auditor] Auto-sync disabled');
+}
 
 type RepoActivityPayload = {
   repo: string;

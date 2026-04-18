@@ -60,6 +60,18 @@ Point your GitHub App webhook URL to your Sentinel service using a tunnel (e.g. 
 npx localtunnel --port 3001 --subdomain my-gitflow-sentinel
 ```
 
+### 8. Commit Ingestion Notes
+
+- Realtime commit ingestion requires the GitHub App to subscribe to the `Push` webhook event.
+- The app must have repository `Contents` read permission to fetch commit details for historical backfill.
+- Auditor now runs periodic auto-sync using `scripts/sync.ts` so backfill is automatic by default.
+
+Auto-sync controls (from `.env`):
+
+- `AUTO_SYNC_ENABLED` (`true` by default)
+- `AUTO_SYNC_RUN_ON_BOOT` (`true` by default)
+- `AUTO_SYNC_INTERVAL_MINUTES` (`15` by default)
+
 ## Beta Versioning
 
 Beta progression is tracked in [BETA_VERSION](BETA_VERSION):
