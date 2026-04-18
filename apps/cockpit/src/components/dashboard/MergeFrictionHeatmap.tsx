@@ -6,10 +6,10 @@ const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const hours = ['Morning', 'Afternoon', 'Evening'];
 
 const getColor = (val: number) => {
-  if (val === 0) return 'bg-slate-700/40 text-slate-400';
-  if (val < 2) return 'bg-emerald-400/75 text-slate-950';
-  if (val < 5) return 'bg-amber-300/80 text-slate-950';
-  return 'bg-rose-400/85 text-slate-950';
+  if (val === 0) return 'border border-border bg-[#0d1117] text-slate-500';
+  if (val < 2) return 'border border-[#238636]/40 bg-[#238636]/20 text-[#3fb950]';
+  if (val < 5) return 'border border-[#9e6a03]/40 bg-[#9e6a03]/20 text-[#d29922]';
+  return 'border border-[#da3633]/45 bg-[#da3633]/22 text-[#f85149]';
 };
 
 export function MergeFrictionHeatmap({
@@ -47,7 +47,7 @@ export function MergeFrictionHeatmap({
               {hours.map((_, hourIdx) => (
                 <div
                   key={`${day}-${hourIdx}`}
-                  className={`flex h-10 items-center justify-center rounded-lg text-xs font-bold ${getColor(data[dayIdx][hourIdx])}`}
+                  className={`flex h-10 items-center justify-center rounded-md text-xs font-semibold ${getColor(data[dayIdx][hourIdx])}`}
                 >
                   {data[dayIdx][hourIdx] > 0 ? `+${data[dayIdx][hourIdx]}h` : '--'}
                 </div>

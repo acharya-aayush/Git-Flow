@@ -50,8 +50,8 @@ export function BottleneckTable({ prs = [] }: { prs?: StalePrTableRow[] }) {
           <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-100">Stale Pull Requests</h3>
           <p className="mt-1 text-xs text-slate-400">Open for more than 48 hours with zero review activity</p>
         </div>
-        <div className="rounded-sm border border-amber-300/35 bg-amber-300/10 p-2">
-          <AlertFillIcon size={14} className="text-amber-200" />
+        <div className="rounded-md border border-[#9e6a03]/40 bg-[#9e6a03]/16 p-2">
+          <AlertFillIcon size={14} className="text-[#d29922]" />
         </div>
       </div>
 
@@ -80,7 +80,7 @@ export function BottleneckTable({ prs = [] }: { prs?: StalePrTableRow[] }) {
                     <td className="px-5 py-3 text-slate-300">{item.author}</td>
                     <td className="px-5 py-3 metric-mono text-slate-100">{item.daysOpen}</td>
                     <td className="px-5 py-3">
-                      <span className={`inline-flex rounded-sm border px-2.5 py-1 text-xs font-semibold ${item.daysOpen > 5 ? 'border-red-300/40 bg-red-300/15 text-red-100' : 'border-amber-300/40 bg-amber-300/15 text-amber-100'}`}>
+                      <span className={`inline-flex rounded-sm border px-2.5 py-1 text-xs font-semibold ${item.daysOpen > 5 ? 'border-[#da3633]/45 bg-[#da3633]/20 text-[#f85149]' : 'border-[#9e6a03]/40 bg-[#9e6a03]/18 text-[#d29922]'}`}>
                         {item.status}
                       </span>
                     </td>

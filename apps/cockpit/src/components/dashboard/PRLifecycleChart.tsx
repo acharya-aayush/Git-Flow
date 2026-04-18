@@ -25,12 +25,12 @@ export function PRLifecycleChart({ chartdata = DEFAULT_CHARTDATA }: { chartdata?
           data={displayChartdata}
           index="date"
           categories={['Avg Lifecycle']}
-          colors={['cyan']}
+          colors={['blue']}
           valueFormatter={(number: number) => `${number} hrs`}
           noDataText="Awaiting Pull Request events..."
         />
       ) : (
-        <div className="rounded-xl border border-border bg-muted/20 p-4">
+        <div className="rounded-md border border-border bg-[#0d1117] p-4">
           <Text className="text-slate-300/85">
             Not enough merged PR history yet to render a lifecycle trend.
           </Text>

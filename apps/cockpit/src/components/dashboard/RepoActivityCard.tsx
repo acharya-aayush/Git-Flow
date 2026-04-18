@@ -9,24 +9,24 @@ import {
 import type { RepoActivityEvent } from '@gitflow/shared';
 
 function kindToBadge(kind: RepoActivityEvent['kind']): { label: string; className: string } {
-  if (kind === 'push') return { label: 'commit push', className: 'border-cyan-300/35 bg-cyan-300/10 text-cyan-100' };
-  if (kind === 'pull_request') return { label: 'pull request', className: 'border-indigo-300/35 bg-indigo-300/10 text-indigo-100' };
-  if (kind === 'pull_request_review') return { label: 'review', className: 'border-amber-300/35 bg-amber-300/10 text-amber-100' };
-  return { label: 'issue', className: 'border-rose-300/35 bg-rose-300/10 text-rose-100' };
+  if (kind === 'push') return { label: 'commit push', className: 'border-[#1f6feb]/40 bg-[#1f6feb]/16 text-[#79c0ff]' };
+  if (kind === 'pull_request') return { label: 'pull request', className: 'border-[#8957e5]/40 bg-[#8957e5]/18 text-[#bc8cff]' };
+  if (kind === 'pull_request_review') return { label: 'review', className: 'border-[#9e6a03]/40 bg-[#9e6a03]/18 text-[#d29922]' };
+  return { label: 'issue', className: 'border-[#da3633]/45 bg-[#da3633]/20 text-[#f85149]' };
 }
 
 function kindToIcon(kind: RepoActivityEvent['kind']) {
-  if (kind === 'push') return <GitBranchIcon size={14} className="text-cyan-200" />;
-  if (kind === 'pull_request') return <GitPullRequestIcon size={14} className="text-indigo-200" />;
-  if (kind === 'pull_request_review') return <CommentDiscussionIcon size={14} className="text-amber-200" />;
-  return <IssueOpenedIcon size={14} className="text-rose-200" />;
+  if (kind === 'push') return <GitBranchIcon size={14} className="text-[#79c0ff]" />;
+  if (kind === 'pull_request') return <GitPullRequestIcon size={14} className="text-[#bc8cff]" />;
+  if (kind === 'pull_request_review') return <CommentDiscussionIcon size={14} className="text-[#d29922]" />;
+  return <IssueOpenedIcon size={14} className="text-[#f85149]" />;
 }
 
 export function RepoActivityCard({ event }: { event: RepoActivityEvent }) {
   const badge = kindToBadge(event.kind);
 
   return (
-    <Card className="panel border-none bg-transparent p-0 transition-all duration-300 hover:translate-y-[-1px]">
+    <Card className="panel border-none bg-transparent p-0">
       <div className="panel-body">
         <Flex alignItems="center" justifyContent="between">
           <div className="min-w-0">
@@ -51,7 +51,7 @@ export function RepoActivityCard({ event }: { event: RepoActivityEvent }) {
             </Text>
           </div>
 
-          <Text className="metric-mono whitespace-nowrap text-xs text-cyan-100/75">
+          <Text className="metric-mono whitespace-nowrap text-xs text-slate-400">
             {formatDistanceToNow(new Date(event.timestamp), { addSuffix: true })}
           </Text>
         </Flex>

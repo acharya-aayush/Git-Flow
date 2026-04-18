@@ -14,18 +14,17 @@ export function DoraMetricsGrid({ metrics = DEFAULT_METRICS }: { metrics?: DoraM
 
   return (
     <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-      {displayMetrics.map((item, index) => (
+      {displayMetrics.map((item) => (
         <article
           key={item.title}
           className="panel overflow-hidden"
         >
-          <div className="panel-body relative">
-            <div className="absolute right-0 top-0 h-20 w-20 translate-x-5 -translate-y-5 rotate-12 rounded-xl bg-cyan-300/10 blur-2xl" />
-            <p className="text-xs uppercase tracking-[0.14em] text-slate-400">{item.title}</p>
-            <p className="metric-mono mt-3 text-3xl font-semibold text-slate-100">{item.metric}</p>
-            <div className="mt-4 flex items-center justify-between text-sm text-slate-300/85">
+          <div className="panel-body">
+            <p className="text-xs font-medium text-slate-400">{item.title}</p>
+            <p className="metric-mono mt-2 text-3xl font-semibold text-slate-100">{item.metric}</p>
+            <div className="mt-3 flex items-center justify-between text-sm text-slate-300/85">
               <span>{item.delta}</span>
-              <ArrowUpRightIcon size={14} className={`${index % 2 === 0 ? 'text-cyan-200' : 'text-amber-200'}`} />
+              <ArrowUpRightIcon size={14} className="text-slate-500" />
             </div>
           </div>
         </article>

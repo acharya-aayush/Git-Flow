@@ -17,12 +17,12 @@ export function ReviewsBarChart({ chartdata = [] }: { chartdata?: ReviewsBarDatu
             data={chartdata}
             index="name"
             categories={['Reviews']}
-            colors={['cyan']}
+            colors={['blue']}
             yAxisWidth={42}
             noDataText="Awaiting pull request review events..."
           />
         ) : (
-          <div className="rounded-xl border border-border bg-muted/20 p-4">
+          <div className="rounded-md border border-border bg-[#0d1117] p-4">
             <Text className="text-slate-300/85">No review events found yet.</Text>
           </div>
         )}
