@@ -2,7 +2,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useGitFlowStore } from '@/lib/store';
 import { useWebsocket } from '@/lib/websocket';
-import { Activity, CircleDot } from 'lucide-react';
+import {
+  DotFillIcon,
+  PulseIcon,
+  RepoIcon,
+  SearchIcon,
+  XIcon,
+} from '@primer/octicons-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const TITLES: Record<string, string> = {
@@ -14,6 +20,100 @@ const TITLES: Record<string, string> = {
   '/bottlenecks': 'Bottlenecks',
   '/prs': 'Realtime Repository Feed',
 };
+
+type RepositorySearchControlProps = {
+  selectedRepoValue: string;
+  repositories: string[];
+  onRepoChange: (repo: string) => void;
+};
+
+function RepositorySearchControl({
+  selectedRepoValue,
+  repositories,
+  onRepoChange,
+}: RepositorySearchControlProps) {
+  const [repoSearch, setRepoSearch] = useState(selectedRepoValue);
+
+  const visibleRepositories = useMemo(() => {
+    if (!repoSearch.trim()) {
+      return repositories;
+    }
+    const q = repoSearch.toLowerCase();
+    return repositories.filter((repo) => repo.toLowerCase().includes(q));
+  }, [repositories, repoSearch]);
+
+  const autoApplyRepositoryQuery = useCallback((rawValue: string) => {
+    const query = rawValue.trim();
+    if (!query) {
+      onRepoChange('all');
+      return;
+    }
+
+    const lowerQuery = query.toLowerCase();
+    const exact = repositories.find((repo) => repo.toLowerCase() === lowerQuery);
+    if (exact) {
+      onRepoChange(exact);
+      return;
+    }
+
+    const firstMatch = repositories.find((repo) => repo.toLowerCase().includes(lowerQuery));
+    if (firstMatch) {
+      onRepoChange(firstMatch);
+    }
+  }, [onRepoChange, repositories]);
+
+  useEffect(() => {
+    if (repoSearch === selectedRepoValue) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      autoApplyRepositoryQuery(repoSearch);
+    }, 180);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [autoApplyRepositoryQuery, repoSearch, selectedRepoValue]);
+
+  return (
+    <div className="boneyard-bar flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-300">
+      <RepoIcon size={14} className="text-slate-400" />
+      <span className="text-slate-400">Repository</span>
+      <div className="relative min-w-[260px] max-w-[320px]">
+        <SearchIcon size={12} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
+        <input
+          value={repoSearch}
+          list="repo-options"
+          onChange={(event) => setRepoSearch(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key !== 'Enter') {
+              return;
+            }
+            autoApplyRepositoryQuery(repoSearch);
+          }}
+          placeholder="Type repository name..."
+          className="w-full rounded-sm border border-border bg-[#10141a] pl-7 pr-7 py-1.5 text-xs text-slate-200 outline-none"
+        />
+        {repoSearch ? (
+          <button
+            type="button"
+            onClick={() => setRepoSearch('')}
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-200"
+            aria-label="Clear repository search"
+          >
+            <XIcon size={12} />
+          </button>
+        ) : null}
+        <datalist id="repo-options">
+          {visibleRepositories.slice(0, 80).map((repo) => (
+            <option key={repo} value={repo} />
+          ))}
+        </datalist>
+      </div>
+    </div>
+  );
+}
 
 export function Topbar() {
   const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001/ws';
@@ -28,18 +128,10 @@ export function Topbar() {
   const title = TITLES[pathname] || 'GitFlow';
 
   const [repositories, setRepositories] = useState<string[]>([]);
-  const [repoSearch, setRepoSearch] = useState('');
 
   const selectedRepo = useMemo(() => searchParams.get('repo') || 'all', [searchParams]);
   const selectedWindow = useMemo(() => searchParams.get('window') || '30d', [searchParams]);
-
-  const visibleRepositories = useMemo(() => {
-    if (!repoSearch.trim()) {
-      return repositories;
-    }
-    const q = repoSearch.toLowerCase();
-    return repositories.filter((repo) => repo.toLowerCase().includes(q));
-  }, [repositories, repoSearch]);
+  const selectedRepoValue = selectedRepo === 'all' ? '' : selectedRepo;
 
   const onRepoChange = useCallback((repo: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -62,32 +154,6 @@ export function Topbar() {
     const query = params.toString();
     router.push(query ? `${pathname}?${query}` : pathname);
   }, [pathname, router, searchParams]);
-
-  useEffect(() => {
-    const query = repoSearch.trim().toLowerCase();
-    if (!query) {
-      return;
-    }
-
-    const exact = repositories.find((repo) => repo.toLowerCase() === query);
-    if (exact && exact !== selectedRepo) {
-      onRepoChange(exact);
-      return;
-    }
-
-    const firstMatch = visibleRepositories[0];
-    if (!firstMatch || firstMatch === selectedRepo) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      onRepoChange(firstMatch);
-    }, 200);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [onRepoChange, repoSearch, repositories, selectedRepo, visibleRepositories]);
 
   useEffect(() => {
     let cancelled = false;
@@ -128,44 +194,19 @@ export function Topbar() {
       </div>
 
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-        <div className="flex items-center gap-2 rounded-md border border-border bg-[#0d1117] px-2.5 py-1.5 text-xs text-slate-300">
-          <span className="text-slate-400">Repository</span>
-          <input
-            value={repoSearch}
-            onChange={(event) => setRepoSearch(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key !== 'Enter') {
-                return;
-              }
+        <RepositorySearchControl
+          key={selectedRepoValue || 'all'}
+          selectedRepoValue={selectedRepoValue}
+          repositories={repositories}
+          onRepoChange={onRepoChange}
+        />
 
-              const firstMatch = visibleRepositories[0];
-              if (firstMatch) {
-                onRepoChange(firstMatch);
-              }
-            }}
-            placeholder="search..."
-            className="w-24 rounded border border-border bg-[#161b22] px-2 py-1 text-xs text-slate-200 outline-none"
-          />
-          <select
-            value={selectedRepo}
-            onChange={(event) => onRepoChange(event.target.value)}
-            className="max-w-[240px] rounded border border-border bg-[#0d1117] px-2 py-1 text-xs text-slate-100 outline-none"
-          >
-            <option value="all">All repositories</option>
-            {visibleRepositories.map((repo) => (
-              <option key={repo} value={repo}>
-                {repo}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex items-center gap-2 rounded-md border border-border bg-[#0d1117] px-2.5 py-1.5 text-xs text-slate-300">
+        <div className="boneyard-bar flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-300">
           <span className="text-slate-400">Window</span>
           <select
             value={selectedWindow}
             onChange={(event) => onWindowChange(event.target.value)}
-            className="rounded border border-border bg-[#0d1117] px-2 py-1 text-xs text-slate-100 outline-none"
+            className="rounded-sm border border-border bg-[#10141a] px-2 py-1 text-xs text-slate-100 outline-none"
           >
             <option value="7d">7d</option>
             <option value="30d">30d</option>
@@ -174,24 +215,24 @@ export function Topbar() {
           </select>
         </div>
 
-        <div className="hidden items-center gap-2 rounded-full border border-border bg-[#0d1117] px-3 py-1.5 text-xs text-slate-300 sm:flex">
-          <CircleDot className="h-3.5 w-3.5 text-slate-400" />
+        <div className="boneyard-bar hidden items-center gap-2 px-3 py-1.5 text-xs text-slate-300 sm:flex">
+          <DotFillIcon size={12} className="text-slate-400" />
           Unified Metrics View
         </div>
 
-        <div className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium ${isConnected ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-amber-500/35 bg-amber-500/10 text-amber-200'}`}>
-          <Activity className={`h-3.5 w-3.5 ${isConnected ? 'animate-pulse text-emerald-300' : 'text-amber-300'}`} />
+        <div className={`boneyard-bar flex items-center gap-2 px-3 py-1.5 text-xs font-medium ${isConnected ? 'border-emerald-500/45 bg-emerald-500/10 text-emerald-300' : 'border-amber-500/45 bg-amber-500/10 text-amber-200'}`}>
+          <PulseIcon size={13} className={`${isConnected ? 'animate-pulse text-emerald-300' : 'text-amber-300'}`} />
           {isConnected ? 'Stream Online' : 'Disconnected'}
         </div>
 
         {connectionError ? (
-          <div className="rounded-full border border-red-500/35 bg-red-500/10 px-3 py-1.5 text-xs text-red-200">
+          <div className="boneyard-bar border-red-500/35 bg-red-500/10 px-3 py-1.5 text-xs text-red-200">
             {connectionError}
           </div>
         ) : null}
 
         {!isConnected && !connectionError ? (
-          <div className="rounded-full border border-border bg-[#0d1117] px-3 py-1.5 text-xs text-slate-300">
+          <div className="boneyard-bar px-3 py-1.5 text-xs text-slate-300">
             Waiting for websocket events
           </div>
         ) : null}

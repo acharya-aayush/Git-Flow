@@ -3,24 +3,24 @@
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import {
-  LayoutDashboard,
-  AlertCircle,
-  GitPullRequest,
-  Activity,
-  Flame,
-  CircleHelp,
-  Share2,
-} from 'lucide-react';
+  AlertIcon,
+  FlameIcon,
+  GitPullRequestIcon,
+  HomeIcon,
+  PeopleIcon,
+  PulseIcon,
+  QuestionIcon,
+} from '@primer/octicons-react';
 import { FloPanda } from '../ui/FloPanda';
 
 const navigation = [
-  { name: 'Overview', href: '/', icon: LayoutDashboard },
-  { name: 'Stability', href: '/stability', icon: Activity },
-  { name: 'Heatmap', href: '/heatmap', icon: Flame },
-  { name: 'Issues', href: '/issues', icon: CircleHelp },
-  { name: 'Contributors', href: '/contributors', icon: Share2 },
-  { name: 'Bottlenecks', href: '/bottlenecks', icon: AlertCircle },
-  { name: 'Realtime Feed', href: '/prs', icon: GitPullRequest },
+  { name: 'Overview', href: '/', icon: HomeIcon },
+  { name: 'Stability', href: '/stability', icon: PulseIcon },
+  { name: 'Heatmap', href: '/heatmap', icon: FlameIcon },
+  { name: 'Issues', href: '/issues', icon: QuestionIcon },
+  { name: 'Contributors', href: '/contributors', icon: PeopleIcon },
+  { name: 'Bottlenecks', href: '/bottlenecks', icon: AlertIcon },
+  { name: 'Realtime Feed', href: '/prs', icon: GitPullRequestIcon },
 ];
 
 function classNames(...classes: string[]) {
@@ -53,13 +53,14 @@ export function Sidebar() {
                   isActive
                     ? 'bg-blue-500/15 text-blue-200 border border-blue-400/30'
                     : 'text-slate-300 hover:bg-white/5 hover:text-white border border-transparent',
-                  'group flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all'
+                  'group flex items-center rounded-sm px-3 py-2.5 text-sm font-medium transition-all'
                 )}
               >
                 <item.icon
+                  size={14}
                   className={classNames(
                     isActive ? 'text-blue-200' : 'text-slate-400 group-hover:text-slate-100',
-                    'mr-3 h-4 w-4 flex-shrink-0'
+                    'mr-3 flex-shrink-0'
                   )}
                   aria-hidden="true"
                 />
@@ -69,7 +70,7 @@ export function Sidebar() {
           })}
         </nav>
 
-        <div className="mt-auto rounded-xl border border-blue-400/20 bg-blue-500/5 p-3 text-xs text-slate-300">
+        <div className="mt-auto rounded-sm border border-blue-400/20 bg-blue-500/5 p-3 text-xs text-slate-300">
           <p className="font-semibold uppercase tracking-wide text-blue-200">Live Scope</p>
           <p className="mt-1 leading-relaxed text-slate-400">Historical + real-time pull request telemetry across connected repositories.</p>
         </div>
