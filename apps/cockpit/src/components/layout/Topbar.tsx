@@ -72,8 +72,22 @@ export function Topbar() {
     const exact = repositories.find((repo) => repo.toLowerCase() === query);
     if (exact && exact !== selectedRepo) {
       onRepoChange(exact);
+      return;
     }
-  }, [onRepoChange, repoSearch, repositories, selectedRepo]);
+
+    const firstMatch = visibleRepositories[0];
+    if (!firstMatch || firstMatch === selectedRepo) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      onRepoChange(firstMatch);
+    }, 200);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [onRepoChange, repoSearch, repositories, selectedRepo, visibleRepositories]);
 
   useEffect(() => {
     let cancelled = false;
