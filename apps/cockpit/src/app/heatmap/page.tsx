@@ -10,23 +10,23 @@ type HeatmapSearchParams = {
 
 function heatCellClass(touches: number, maxTouches: number): string {
   if (!maxTouches || !touches) {
-    return 'border-border/60 bg-[#0f141b] text-slate-500';
+    return 'border-border bg-[#0d1117] text-slate-500';
   }
 
   const ratio = touches / maxTouches;
   if (ratio >= 0.85) {
-    return 'border-[#ff6a3d]/45 bg-[#ff6a3d]/35 text-orange-50';
+    return 'border-[#3fb950]/40 bg-[#3fb950]/35 text-[#f0f6fc]';
   }
   if (ratio >= 0.65) {
-    return 'border-[#ff8f5d]/40 bg-[#ff8f5d]/27 text-orange-100';
+    return 'border-[#2ea043]/40 bg-[#2ea043]/28 text-[#f0f6fc]';
   }
   if (ratio >= 0.45) {
-    return 'border-[#ffb27a]/35 bg-[#ffb27a]/22 text-orange-100';
+    return 'border-[#238636]/38 bg-[#238636]/24 text-[#e6edf3]';
   }
   if (ratio >= 0.25) {
-    return 'border-[#ffd4a5]/30 bg-[#ffd4a5]/18 text-amber-100';
+    return 'border-[#0e4429]/40 bg-[#0e4429]/32 text-[#c9d1d9]';
   }
-  return 'border-[#fce8c8]/25 bg-[#fce8c8]/12 text-slate-200';
+  return 'border-[#0e4429]/30 bg-[#0e4429]/20 text-[#8b949e]';
 }
 
 function compactFileLabel(path: string): string {
@@ -145,11 +145,11 @@ export default async function HeatmapPage({
 
                 <div className="flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.08em] text-slate-400">
                   <span className="text-slate-500">low</span>
-                  <span className="h-2 w-7 rounded-sm border border-[#fce8c8]/25 bg-[#fce8c8]/12" />
-                  <span className="h-2 w-7 rounded-sm border border-[#ffd4a5]/30 bg-[#ffd4a5]/18" />
-                  <span className="h-2 w-7 rounded-sm border border-[#ffb27a]/35 bg-[#ffb27a]/22" />
-                  <span className="h-2 w-7 rounded-sm border border-[#ff8f5d]/40 bg-[#ff8f5d]/27" />
-                  <span className="h-2 w-7 rounded-sm border border-[#ff6a3d]/45 bg-[#ff6a3d]/35" />
+                  <span className="h-2 w-7 rounded-sm border border-[#0e4429]/30 bg-[#0e4429]/20" />
+                  <span className="h-2 w-7 rounded-sm border border-[#0e4429]/40 bg-[#0e4429]/32" />
+                  <span className="h-2 w-7 rounded-sm border border-[#238636]/38 bg-[#238636]/24" />
+                  <span className="h-2 w-7 rounded-sm border border-[#2ea043]/40 bg-[#2ea043]/28" />
+                  <span className="h-2 w-7 rounded-sm border border-[#3fb950]/40 bg-[#3fb950]/35" />
                   <span className="text-slate-500">high</span>
                 </div>
               </>
@@ -178,7 +178,7 @@ export default async function HeatmapPage({
                     <span className="metric-mono text-rose-300">-{row.deletions}</span>
                     <div className="ml-auto h-1.5 w-20 overflow-hidden rounded-sm border border-border/70 bg-[#0f141b]">
                       <div
-                        className="h-1.5 bg-[#ff8f5d]"
+                        className="h-1.5 bg-[#2ea043]"
                         style={{ width: `${Math.max(5, Math.round((row.touches / maxTouches) * 100))}%` }}
                       />
                     </div>

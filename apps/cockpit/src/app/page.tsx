@@ -91,26 +91,26 @@ export default async function ExecutiveOverview({
             <p className="mt-2 inline-flex rounded-md border border-border bg-[#0d1117] px-2 py-1 text-xs text-slate-300">
               Scope: {repoFilter || 'All repositories'}
             </p>
-            <p className="mt-2 ml-2 inline-flex rounded-md border border-border bg-[#0d1117] px-2 py-1 text-xs text-slate-300">
+            <p className="ml-2 mt-2 inline-flex rounded-md border border-border bg-[#0d1117] px-2 py-1 text-xs text-slate-300">
               Window: {selectedWindow}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <div className="rounded-xl border border-border/70 bg-slate-800/45 px-3 py-2">
-              <p className="text-[11px] uppercase tracking-wide text-slate-400">Repos</p>
+            <div className="rounded-md border border-border bg-[#0d1117] px-3 py-2">
+              <p className="text-[11px] text-slate-400">Repos</p>
               <p className="metric-mono mt-1 text-lg font-semibold text-slate-100">{repoCount}</p>
             </div>
-            <div className="rounded-xl border border-border/70 bg-slate-800/45 px-3 py-2">
-              <p className="text-[11px] uppercase tracking-wide text-slate-400">Open PRs</p>
+            <div className="rounded-md border border-border bg-[#0d1117] px-3 py-2">
+              <p className="text-[11px] text-slate-400">Open PRs</p>
               <p className="metric-mono mt-1 text-lg font-semibold text-slate-100">{openCount}</p>
             </div>
-            <div className="rounded-xl border border-border/70 bg-slate-800/45 px-3 py-2">
-              <p className="text-[11px] uppercase tracking-wide text-slate-400">Reviews</p>
+            <div className="rounded-md border border-border bg-[#0d1117] px-3 py-2">
+              <p className="text-[11px] text-slate-400">Reviews</p>
               <p className="metric-mono mt-1 text-lg font-semibold text-slate-100">{reviewCount}</p>
             </div>
-            <div className="rounded-xl border border-border/70 bg-slate-800/45 px-3 py-2">
-              <p className="text-[11px] uppercase tracking-wide text-slate-400">Merged</p>
+            <div className="rounded-md border border-border bg-[#0d1117] px-3 py-2">
+              <p className="text-[11px] text-slate-400">Merged</p>
               <p className="metric-mono mt-1 text-lg font-semibold text-slate-100">{totalMerged}</p>
             </div>
           </div>
@@ -133,12 +133,12 @@ export default async function ExecutiveOverview({
           <div className="panel-body max-h-[360px] overflow-y-auto">
             <ul className="space-y-2">
               {recentMerges.length === 0 ? (
-                <li className="rounded-xl border border-border bg-muted/20 px-4 py-5 text-center text-sm text-slate-400">
+                <li className="rounded-md border border-border bg-[#0d1117] px-4 py-5 text-center text-sm text-slate-400">
                   No merged pull request records found.
                 </li>
               ) : (
                 recentMerges.map((pr) => (
-                  <li key={`${pr.repository.full_name}-${pr.number}`} className="rounded-xl border border-border/70 bg-slate-800/35 px-3 py-2">
+                  <li key={`${pr.repository.full_name}-${pr.number}`} className="rounded-md border border-border bg-[#0d1117] px-3 py-2">
                     <p className="truncate text-sm font-semibold text-slate-100">
                       {pr.repository.full_name} #{pr.number}
                     </p>

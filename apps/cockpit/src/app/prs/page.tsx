@@ -129,7 +129,7 @@ function PRsLiveContent() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div className={`rounded-sm border px-4 py-2 text-xs font-medium uppercase tracking-[0.12em] ${isConnected ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-amber-500/35 bg-amber-500/10 text-amber-200'}`}>
+            <div className={`rounded-sm border px-4 py-2 text-xs font-medium uppercase tracking-[0.12em] ${isConnected ? 'border-[#238636]/40 bg-[#238636]/15 text-[#3fb950]' : 'border-[#9e6a03]/40 bg-[#9e6a03]/18 text-[#d29922]'}`}>
               {isConnected ? 'Connected' : 'Disconnected'}
             </div>
             <div className="rounded-sm border border-border bg-[#0d1117] px-4 py-2 text-xs font-medium uppercase tracking-[0.12em] text-slate-300">
@@ -159,19 +159,19 @@ function PRsLiveContent() {
             </div>
             <div className="flex items-center justify-between border-b border-border/60 pb-2">
               <span className="text-slate-400">Sentinel Health</span>
-              <span className={`metric-mono ${healthStatus === 'ok' ? 'text-emerald-300' : healthStatus === 'down' ? 'text-red-200' : 'text-slate-300'}`}>
+              <span className={`metric-mono ${healthStatus === 'ok' ? 'text-[#3fb950]' : healthStatus === 'down' ? 'text-[#f85149]' : 'text-slate-300'}`}>
                 {healthStatus}
               </span>
             </div>
             <div className="flex items-center justify-between border-b border-border/60 pb-2">
               <span className="text-slate-400">History Sync</span>
-              <span className={`metric-mono ${historyError ? 'text-red-200' : historyLoading ? 'text-amber-200' : 'text-emerald-300'}`}>
+              <span className={`metric-mono ${historyError ? 'text-[#f85149]' : historyLoading ? 'text-[#d29922]' : 'text-[#3fb950]'}`}>
                 {historyError ? 'error' : historyLoading ? 'loading' : 'ready'}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-slate-400">Last Error</span>
-              <span className="metric-mono text-red-200">{connectionError || 'none'}</span>
+              <span className="metric-mono text-[#f85149]">{connectionError || 'none'}</span>
             </div>
             <div className="rounded-md border border-border bg-[#0d1117] px-2 py-1.5 text-xs text-slate-300">
               {historyError ? `history sync failed: ${historyError}` : healthMessage}
@@ -212,9 +212,9 @@ function PRsLiveContent() {
                     : 'No events found yet. Push commits, create PRs, or open issues to populate this feed.'}
               </Text>
               <div className="flex justify-center gap-2">
-                <div className="h-2.5 w-2.5 animate-pulse rounded-[2px] bg-cyan-300/70" />
-                <div className="h-2.5 w-2.5 animate-pulse rounded-[2px] bg-cyan-300/50 [animation-delay:120ms]" />
-                <div className="h-2.5 w-2.5 animate-pulse rounded-[2px] bg-cyan-300/35 [animation-delay:240ms]" />
+                <div className="h-2.5 w-2.5 animate-pulse rounded-[2px] bg-[#2f81f7]/70" />
+                <div className="h-2.5 w-2.5 animate-pulse rounded-[2px] bg-[#2f81f7]/50 [animation-delay:120ms]" />
+                <div className="h-2.5 w-2.5 animate-pulse rounded-[2px] bg-[#2f81f7]/35 [animation-delay:240ms]" />
               </div>
             </div>
           </Card>
