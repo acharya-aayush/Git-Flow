@@ -129,10 +129,10 @@ function PRsLiveContent() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div className={`rounded-full border px-4 py-2 text-xs font-medium ${isConnected ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-amber-500/35 bg-amber-500/10 text-amber-200'}`}>
+            <div className={`rounded-sm border px-4 py-2 text-xs font-medium uppercase tracking-[0.12em] ${isConnected ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-amber-500/35 bg-amber-500/10 text-amber-200'}`}>
               {isConnected ? 'Connected' : 'Disconnected'}
             </div>
-            <div className="rounded-full border border-border bg-[#0d1117] px-4 py-2 text-xs font-medium text-slate-300">
+            <div className="rounded-sm border border-border bg-[#0d1117] px-4 py-2 text-xs font-medium uppercase tracking-[0.12em] text-slate-300">
               {visibleEvents.length} visible events
             </div>
           </div>
@@ -212,9 +212,9 @@ function PRsLiveContent() {
                     : 'No events found yet. Push commits, create PRs, or open issues to populate this feed.'}
               </Text>
               <div className="flex justify-center gap-2">
-                <div className="h-2.5 w-2.5 animate-pulse rounded-full bg-cyan-300/70" />
-                <div className="h-2.5 w-2.5 animate-pulse rounded-full bg-cyan-300/50 [animation-delay:120ms]" />
-                <div className="h-2.5 w-2.5 animate-pulse rounded-full bg-cyan-300/35 [animation-delay:240ms]" />
+                <div className="h-2.5 w-2.5 animate-pulse rounded-[2px] bg-cyan-300/70" />
+                <div className="h-2.5 w-2.5 animate-pulse rounded-[2px] bg-cyan-300/50 [animation-delay:120ms]" />
+                <div className="h-2.5 w-2.5 animate-pulse rounded-[2px] bg-cyan-300/35 [animation-delay:240ms]" />
               </div>
             </div>
           </Card>

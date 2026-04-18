@@ -1,3 +1,5 @@
+@import '@fontsource/jetbrains-mono/latin.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -79,13 +81,20 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-    background-image: radial-gradient(circle at 80% -20%, rgba(88, 166, 255, 0.08), transparent 35%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+    letter-spacing: 0.01em;
+    background-image:
+      linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+      radial-gradient(circle at 80% -20%, rgba(94, 234, 212, 0.08), transparent 35%);
+    background-size: 24px 24px, 24px 24px, auto;
     background-color: #0d1117;
   }
 
-  .metric-mono {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  .metric-mono,
+  .numeric {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    font-variant-numeric: tabular-nums;
   }
 
   ::-webkit-scrollbar {
@@ -95,7 +104,7 @@
 
   ::-webkit-scrollbar-thumb {
     background: rgba(166, 202, 214, 0.3);
-    border-radius: 999px;
+    border-radius: 4px;
   }
 
   ::-webkit-scrollbar-track {
@@ -105,14 +114,18 @@
 
 @layer components {
   .panel {
-    @apply rounded-xl border border-border/90 bg-card shadow-[0_12px_30px_-24px_rgba(0,0,0,0.7)];
+    @apply rounded-sm border border-border/90 bg-card/70 shadow-none backdrop-blur-[1px];
   }
 
   .panel-header {
-    @apply border-b border-border/70 px-5 py-4;
+    @apply border-b border-border/70 px-4 py-3;
   }
 
   .panel-body {
-    @apply p-5;
+    @apply p-4;
+  }
+
+  .boneyard-bar {
+    @apply rounded-sm border border-border/80 bg-[#11151b]/80;
   }
 }

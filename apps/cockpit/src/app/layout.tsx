@@ -19,11 +19,13 @@ export default function RootLayout({
       <body className="h-full overscroll-none">
         <div className="relative flex h-screen overflow-hidden">
           <div className="pointer-events-none absolute inset-0 opacity-40">
-            <div className="absolute -left-28 top-10 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl" />
-            <div className="absolute right-8 top-0 h-72 w-72 rounded-full bg-slate-400/10 blur-3xl" />
+            <div className="absolute -left-24 top-8 h-60 w-52 rotate-[8deg] rounded-2xl bg-blue-500/10 blur-3xl" />
+            <div className="absolute right-10 top-2 h-64 w-56 -rotate-6 rounded-2xl bg-slate-400/10 blur-3xl" />
           </div>
 
-          <Sidebar />
+          <Suspense fallback={<aside className="hidden h-full w-[270px] shrink-0 border-r border-border/80 bg-[#161b22]/95 lg:block" />}>
+            <Sidebar />
+          </Suspense>
 
           <div className="relative z-10 flex flex-1 flex-col overflow-hidden">
             <Suspense fallback={<div className="h-[72px] w-full border-b border-border/70 bg-[#161b22]/85" />}>

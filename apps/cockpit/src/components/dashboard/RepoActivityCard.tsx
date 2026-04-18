@@ -1,20 +1,25 @@
-import { Card, Text, Flex, Badge, type Color } from '@tremor/react';
+import { Card, Text, Flex } from '@tremor/react';
 import { formatDistanceToNow } from 'date-fns';
-import { GitBranch, GitPullRequest, MessageSquareMore, CircleAlert } from 'lucide-react';
+import {
+  CommentDiscussionIcon,
+  GitBranchIcon,
+  GitPullRequestIcon,
+  IssueOpenedIcon,
+} from '@primer/octicons-react';
 import type { RepoActivityEvent } from '@gitflow/shared';
 
-function kindToBadge(kind: RepoActivityEvent['kind']): { color: Color; label: string } {
-  if (kind === 'push') return { color: 'cyan', label: 'commit push' };
-  if (kind === 'pull_request') return { color: 'indigo', label: 'pull request' };
-  if (kind === 'pull_request_review') return { color: 'amber', label: 'review' };
-  return { color: 'rose', label: 'issue' };
+function kindToBadge(kind: RepoActivityEvent['kind']): { label: string; className: string } {
+  if (kind === 'push') return { label: 'commit push', className: 'border-cyan-300/35 bg-cyan-300/10 text-cyan-100' };
+  if (kind === 'pull_request') return { label: 'pull request', className: 'border-indigo-300/35 bg-indigo-300/10 text-indigo-100' };
+  if (kind === 'pull_request_review') return { label: 'review', className: 'border-amber-300/35 bg-amber-300/10 text-amber-100' };
+  return { label: 'issue', className: 'border-rose-300/35 bg-rose-300/10 text-rose-100' };
 }
 
 function kindToIcon(kind: RepoActivityEvent['kind']) {
-  if (kind === 'push') return <GitBranch className="h-4 w-4 text-cyan-200" />;
-  if (kind === 'pull_request') return <GitPullRequest className="h-4 w-4 text-indigo-200" />;
-  if (kind === 'pull_request_review') return <MessageSquareMore className="h-4 w-4 text-amber-200" />;
-  return <CircleAlert className="h-4 w-4 text-rose-200" />;
+  if (kind === 'push') return <GitBranchIcon size={14} className="text-cyan-200" />;
+  if (kind === 'pull_request') return <GitPullRequestIcon size={14} className="text-indigo-200" />;
+  if (kind === 'pull_request_review') return <CommentDiscussionIcon size={14} className="text-amber-200" />;
+  return <IssueOpenedIcon size={14} className="text-rose-200" />;
 }
 
 export function RepoActivityCard({ event }: { event: RepoActivityEvent }) {
@@ -28,9 +33,9 @@ export function RepoActivityCard({ event }: { event: RepoActivityEvent }) {
             <Flex alignItems="center" className="gap-2">
               {kindToIcon(event.kind)}
               <span className="truncate text-sm font-semibold text-slate-100">{event.repo}</span>
-              <Badge color={badge.color} size="xs">
+              <span className={`inline-flex rounded-sm border px-2 py-0.5 text-[10px] uppercase tracking-[0.08em] ${badge.className}`}>
                 {badge.label}
-              </Badge>
+              </span>
             </Flex>
 
             <Text className="mt-1 text-xs text-slate-300/90">
