@@ -55,15 +55,14 @@ function runAutoSync(trigger: 'startup' | 'interval') {
     return;
   }
 
-  const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-
   syncInProgress = true;
   console.log(`[Auditor] Auto-sync starting (${trigger})`);
+  console.log(`[Auditor] Auto-sync cwd: ${repoRoot}`);
 
-  const child = spawn(npmCmd, ['run', 'sync'], {
+  const child = spawn('npm run sync', {
     cwd: repoRoot,
-    env: process.env,
     stdio: 'inherit',
+    shell: true,
   });
 
   child.on('error', error => {
