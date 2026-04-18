@@ -2,13 +2,25 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, AlertCircle, GitPullRequest } from 'lucide-react';
+import {
+  LayoutDashboard,
+  AlertCircle,
+  GitPullRequest,
+  Activity,
+  Flame,
+  CircleHelp,
+  Share2,
+} from 'lucide-react';
 import { FloPanda } from '../ui/FloPanda';
 
 const navigation = [
   { name: 'Overview', href: '/', icon: LayoutDashboard },
+  { name: 'Stability', href: '/stability', icon: Activity },
+  { name: 'Heatmap', href: '/heatmap', icon: Flame },
+  { name: 'Issues', href: '/issues', icon: CircleHelp },
+  { name: 'Contributors', href: '/contributors', icon: Share2 },
   { name: 'Bottlenecks', href: '/bottlenecks', icon: AlertCircle },
-  { name: 'Pull Requests', href: '/prs', icon: GitPullRequest },
+  { name: 'Realtime Feed', href: '/prs', icon: GitPullRequest },
 ];
 
 function classNames(...classes: string[]) {

@@ -7,8 +7,12 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const TITLES: Record<string, string> = {
   '/': 'Overview',
+  '/stability': 'Repository Stability',
+  '/heatmap': 'Codebase Heatmap',
+  '/issues': 'Issue Resolution',
+  '/contributors': 'Contributor Network',
   '/bottlenecks': 'Bottlenecks',
-  '/prs': 'Live Pull Requests',
+  '/prs': 'Realtime Repository Feed',
 };
 
 export function Topbar() {
