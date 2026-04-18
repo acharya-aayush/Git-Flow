@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useGitFlowStore } from '@/lib/store';
 import { useWebsocket } from '@/lib/websocket';
 import { Activity, CircleDot } from 'lucide-react';
@@ -41,6 +41,40 @@ export function Topbar() {
     return repositories.filter((repo) => repo.toLowerCase().includes(q));
   }, [repositories, repoSearch]);
 
+  const onRepoChange = useCallback((repo: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (!repo || repo === 'all') {
+      params.delete('repo');
+    } else {
+      params.set('repo', repo);
+    }
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
+  }, [pathname, router, searchParams]);
+
+  const onWindowChange = useCallback((windowValue: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (!windowValue || windowValue === '30d') {
+      params.delete('window');
+    } else {
+      params.set('window', windowValue);
+    }
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
+  }, [pathname, router, searchParams]);
+
+  useEffect(() => {
+    const query = repoSearch.trim().toLowerCase();
+    if (!query) {
+      return;
+    }
+
+    const exact = repositories.find((repo) => repo.toLowerCase() === query);
+    if (exact && exact !== selectedRepo) {
+      onRepoChange(exact);
+    }
+  }, [onRepoChange, repoSearch, repositories, selectedRepo]);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -72,28 +106,6 @@ export function Topbar() {
     }
   }, [livePRs, router]);
 
-  const onRepoChange = (repo: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (!repo || repo === 'all') {
-      params.delete('repo');
-    } else {
-      params.set('repo', repo);
-    }
-    const query = params.toString();
-    router.push(query ? `${pathname}?${query}` : pathname);
-  };
-
-  const onWindowChange = (windowValue: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (!windowValue || windowValue === '30d') {
-      params.delete('window');
-    } else {
-      params.set('window', windowValue);
-    }
-    const query = params.toString();
-    router.push(query ? `${pathname}?${query}` : pathname);
-  };
-
   return (
     <header className="relative z-20 flex min-h-[72px] w-full flex-col gap-3 border-b border-border/70 bg-[#161b22]/85 px-4 py-3 backdrop-blur-sm sm:px-6 lg:flex-row lg:items-center lg:justify-between">
       <div>
@@ -107,6 +119,16 @@ export function Topbar() {
           <input
             value={repoSearch}
             onChange={(event) => setRepoSearch(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key !== 'Enter') {
+                return;
+              }
+
+              const firstMatch = visibleRepositories[0];
+              if (firstMatch) {
+                onRepoChange(firstMatch);
+              }
+            }}
             placeholder="search..."
             className="w-24 rounded border border-border bg-[#161b22] px-2 py-1 text-xs text-slate-200 outline-none"
           />

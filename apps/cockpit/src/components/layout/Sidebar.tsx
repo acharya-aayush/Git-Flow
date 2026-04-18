@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import {
   LayoutDashboard,
   AlertCircle,
@@ -29,6 +29,9 @@ function classNames(...classes: string[]) {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const activeQuery = searchParams.toString();
 
   return (
     <aside className="hidden h-full w-[270px] shrink-0 border-r border-border/80 bg-[#161b22]/95 lg:flex lg:flex-col">
@@ -41,10 +44,11 @@ export function Sidebar() {
         <nav className="space-y-2">
           {navigation.map((item) => {
             const isActive = pathname === item.href;
+            const hrefWithQuery = activeQuery ? `${item.href}?${activeQuery}` : item.href;
             return (
               <Link
                 key={item.name}
-                href={item.href}
+                href={hrefWithQuery}
                 className={classNames(
                   isActive
                     ? 'bg-blue-500/15 text-blue-200 border border-blue-400/30'
