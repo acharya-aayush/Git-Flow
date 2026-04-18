@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client';
 import { DoraMetricsGrid } from '@/components/dashboard/DoraMetricsGrid';
 import { PRLifecycleChart } from '@/components/dashboard/PRLifecycleChart';
 import { Card } from '@tremor/react';
+import { prisma } from '@/lib/prisma';
 import {
   buildLifecycleChartData,
   buildOverviewMetrics,
@@ -13,8 +13,6 @@ import {
 } from '@/lib/dashboard-window';
 
 export const dynamic = 'force-dynamic';
-
-const prisma = new PrismaClient();
 
 type OverviewSearchParams = {
   repo?: string;

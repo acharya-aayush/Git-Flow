@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client';
 import { Title, Text, Card, Metric } from '@tremor/react';
 import { BottleneckTable } from '@/components/dashboard/BottleneckTable';       
 import { ReviewsBarChart } from '@/components/dashboard/ReviewsBarChart';       
 import { MergeFrictionHeatmap } from '@/components/dashboard/MergeFrictionHeatmap';
+import { prisma } from '@/lib/prisma';
 import {
   getWindowStart,
   parseDashboardWindow,
@@ -13,8 +13,6 @@ import { getStaleCounts, toStalePrRows } from '@/lib/bottlenecks';
 import type { ReviewsBarDatum, StalePrTableRow } from '@gitflow/shared';
 
 export const dynamic = 'force-dynamic';
-
-const prisma = new PrismaClient();
 
 type BottlenecksSearchParams = {
   repo?: string;

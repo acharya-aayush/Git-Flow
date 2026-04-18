@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient, type Prisma } from '@gitflow/db';
+import type { Prisma } from '@gitflow/db';
 import type { RepoActivityEvent } from '@gitflow/shared';
+import { prisma } from '@/lib/prisma';
 import {
   getWindowStart,
   isValidRepoFullName,
@@ -8,8 +9,6 @@ import {
 } from '@/lib/dashboard-window';
 
 export const dynamic = 'force-dynamic';
-
-const db = new PrismaClient();
 
 export async function GET(req: Request) {
   try {
@@ -55,7 +54,7 @@ export async function GET(req: Request) {
     }
 
     const [pullRequests, reviews, commits, issues] = await Promise.all([
-      db.pullRequest.findMany({
+      prisma.pullRequest.findMany({
         where: prWhere,
         include: {
           repository: { select: { full_name: true } },
@@ -64,7 +63,7 @@ export async function GET(req: Request) {
         orderBy: { updated_at: 'desc' },
         take: limit,
       }),
-      db.review.findMany({
+      prisma.review.findMany({
         where: reviewWhere,
         include: {
           pull_request: {
@@ -79,7 +78,7 @@ export async function GET(req: Request) {
         orderBy: { submitted_at: 'desc' },
         take: limit,
       }),
-      db.commit.findMany({
+      prisma.commit.findMany({
         where: commitWhere,
         include: {
           repository: { select: { full_name: true } },
@@ -87,7 +86,7 @@ export async function GET(req: Request) {
         orderBy: { committed_at: 'desc' },
         take: limit,
       }),
-      db.issue.findMany({
+      prisma.issue.findMany({
         where: issueWhere,
         include: {
           repository: { select: { full_name: true } },

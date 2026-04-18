@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient, type Prisma } from '@gitflow/db';
+import type { Prisma } from '@gitflow/db';
 import type { PRStreamEvent } from '@gitflow/shared';
+import { prisma } from '@/lib/prisma';
 import {
   getWindowStart,
   isValidRepoFullName,
@@ -8,8 +9,6 @@ import {
 } from '@/lib/dashboard-window';
 
 export const dynamic = 'force-dynamic';
-
-const db = new PrismaClient();
 
 export async function GET(req: Request) {
   try {
@@ -41,7 +40,7 @@ export async function GET(req: Request) {
       ];
     }
 
-    const prs = await db.pullRequest.findMany({
+    const prs = await prisma.pullRequest.findMany({
       where,
       include: {
         repository: {

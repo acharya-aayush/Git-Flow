@@ -1,15 +1,44 @@
-import { PrismaClient } from '@gitflow/db';
-import { Card, Metric, Text, Title } from '@tremor/react';
 import { getWindowStart, parseDashboardWindow, type DashboardWindow } from '@/lib/dashboard-window';
+import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
-
-const prisma = new PrismaClient();
 
 type HeatmapSearchParams = {
   repo?: string;
   window?: DashboardWindow;
 };
+
+function heatCellClass(touches: number, maxTouches: number): string {
+  if (!maxTouches || !touches) {
+    return 'border-border/60 bg-[#0f141b] text-slate-500';
+  }
+
+  const ratio = touches / maxTouches;
+  if (ratio >= 0.85) {
+    return 'border-[#ff6a3d]/45 bg-[#ff6a3d]/35 text-orange-50';
+  }
+  if (ratio >= 0.65) {
+    return 'border-[#ff8f5d]/40 bg-[#ff8f5d]/27 text-orange-100';
+  }
+  if (ratio >= 0.45) {
+    return 'border-[#ffb27a]/35 bg-[#ffb27a]/22 text-orange-100';
+  }
+  if (ratio >= 0.25) {
+    return 'border-[#ffd4a5]/30 bg-[#ffd4a5]/18 text-amber-100';
+  }
+  return 'border-[#fce8c8]/25 bg-[#fce8c8]/12 text-slate-200';
+}
+
+function compactFileLabel(path: string): string {
+  const pieces = path.split('/');
+  if (pieces.length === 1) {
+    return path;
+  }
+
+  const last = pieces[pieces.length - 1] ?? path;
+  const parent = pieces[pieces.length - 2] ?? '';
+  return `${parent}/${last}`;
+}
 
 export default async function HeatmapPage({
   searchParams,
@@ -53,80 +82,113 @@ export default async function HeatmapPage({
   const rows = Array.from(fileMap.entries())
     .map(([filename, value]) => ({ filename, ...value }))
     .sort((a, b) => b.touches - a.touches)
-    .slice(0, 60);
+    .slice(0, 120);
 
   const maxTouches = rows.length ? rows[0].touches : 0;
+  const hotspots = rows.slice(0, 16);
+  const repoLabel = repoFilter ?? 'All repositories';
 
   return (
-    <div className="space-y-5 py-2">
+    <div className="space-y-4 py-2">
       <section className="panel">
         <div className="panel-body">
           <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Code Churn</p>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-100">Git Commit Codebase Heatmap</h2>
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-100">Commit Intensity Heatmap</h2>
           <p className="mt-2 text-sm text-slate-300/85">
-            File touch intensity from commit-level change ingestion across scoped repositories.
+            High-density view of file touch frequency from commit-level ingestion.
           </p>
-          <p className="mt-2 inline-flex rounded-md border border-border bg-[#0d1117] px-2 py-1 text-xs text-slate-300">
-            Window: {selectedWindow}
-          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
+            <span className="boneyard-bar px-2 py-1 text-slate-300">Window: {selectedWindow}</span>
+            <span className="boneyard-bar px-2 py-1 text-slate-300">Scope: {repoLabel}</span>
+            <span className="boneyard-bar px-2 py-1 text-slate-300">Cells: {rows.length}</span>
+          </div>
         </div>
       </section>
 
-      <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <Card className="panel border-none bg-transparent p-0">
-          <div className="panel-body">
-            <Text className="text-slate-400">Commits Scanned</Text>
-            <Metric className="metric-mono mt-2 text-slate-100">{commits.length}</Metric>
-          </div>
-        </Card>
-        <Card className="panel border-none bg-transparent p-0">
-          <div className="panel-body">
-            <Text className="text-slate-400">Unique Files</Text>
-            <Metric className="metric-mono mt-2 text-cyan-100">{fileMap.size}</Metric>
-          </div>
-        </Card>
-        <Card className="panel border-none bg-transparent p-0">
-          <div className="panel-body">
-            <Text className="text-slate-400">Top File Touches</Text>
-            <Metric className="metric-mono mt-2 text-slate-100">{maxTouches}</Metric>
-          </div>
-        </Card>
-      </section>
-
-      <Card className="panel border-none bg-transparent p-0">
-        <div className="panel-header">
-          <Title className="text-slate-100">Most Changed Files</Title>
-        </div>
-        <div className="panel-body space-y-3">
-          {rows.length === 0 ? (
-            <div className="space-y-2">
-              <Text className="text-slate-400">No commit file-change records available yet for this scope.</Text>
-              <Text className="text-xs text-slate-500">
-                If this repository has recent commits, confirm GitHub App push events are subscribed and the app has Contents read access.
-              </Text>
+      <section className="grid grid-cols-1 gap-4 xl:grid-cols-[1.6fr_1fr]">
+        <div className="panel overflow-hidden">
+          <div className="panel-header flex items-center justify-between">
+            <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-100">File Heat Grid</h3>
+            <div className="flex items-center gap-2 text-[11px] text-slate-400">
+              <span className="metric-mono text-slate-200">{commits.length}</span>
+              commits
+              <span className="text-slate-600">/</span>
+              <span className="metric-mono text-slate-200">{fileMap.size}</span>
+              files
             </div>
-          ) : (
-            rows.map((row) => (
-              <div key={row.filename} className="rounded-lg border border-border/70 bg-[#0d1117] p-3">
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span className="truncate pr-3 text-slate-200">{row.filename}</span>
-                  <span className="metric-mono">{row.touches} touches</span>
-                </div>
-                <div className="mt-2 h-2 w-full rounded bg-slate-800">
-                  <div
-                    className="h-2 rounded bg-cyan-400"
-                    style={{ width: `${Math.max(5, Math.round((row.touches / maxTouches) * 100))}%` }}
-                  />
-                </div>
-                <div className="mt-2 flex gap-3 text-[11px] text-slate-400">
-                  <span>+{row.additions} add</span>
-                  <span>-{row.deletions} del</span>
-                </div>
+          </div>
+
+          <div className="panel-body space-y-4">
+            {rows.length === 0 ? (
+              <div className="space-y-2 rounded-sm border border-border/70 bg-[#0f141b] p-4">
+                <p className="text-sm text-slate-300">No commit file-change records available yet for this scope.</p>
+                <p className="text-xs text-slate-500">
+                  Confirm push events are subscribed and the app has Contents read access to this repository.
+                </p>
               </div>
-            ))
-          )}
+            ) : (
+              <>
+                <div className="grid grid-cols-6 gap-2 sm:grid-cols-8 lg:grid-cols-12">
+                  {rows.map((row) => (
+                    <div
+                      key={row.filename}
+                      title={`${row.filename} • ${row.touches} touches (+${row.additions} / -${row.deletions})`}
+                      className={`relative aspect-square min-h-14 overflow-hidden rounded-sm border p-1 ${heatCellClass(row.touches, maxTouches)}`}
+                    >
+                      <span className="metric-mono text-[11px] font-semibold">{row.touches}</span>
+                      <span className="absolute bottom-1 left-1 right-1 truncate text-[10px] opacity-90">
+                        {compactFileLabel(row.filename)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.08em] text-slate-400">
+                  <span className="text-slate-500">low</span>
+                  <span className="h-2 w-7 rounded-sm border border-[#fce8c8]/25 bg-[#fce8c8]/12" />
+                  <span className="h-2 w-7 rounded-sm border border-[#ffd4a5]/30 bg-[#ffd4a5]/18" />
+                  <span className="h-2 w-7 rounded-sm border border-[#ffb27a]/35 bg-[#ffb27a]/22" />
+                  <span className="h-2 w-7 rounded-sm border border-[#ff8f5d]/40 bg-[#ff8f5d]/27" />
+                  <span className="h-2 w-7 rounded-sm border border-[#ff6a3d]/45 bg-[#ff6a3d]/35" />
+                  <span className="text-slate-500">high</span>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      </Card>
+
+        <div className="panel overflow-hidden">
+          <div className="panel-header flex items-center justify-between">
+            <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-100">Hotspots</h3>
+            <span className="metric-mono text-xs text-slate-400">top {hotspots.length}</span>
+          </div>
+
+          <div className="divide-y divide-border/50">
+            {hotspots.length === 0 ? (
+              <div className="px-4 py-5 text-sm text-slate-400">No hotspots yet.</div>
+            ) : (
+              hotspots.map((row) => (
+                <div key={row.filename} className="space-y-2 px-4 py-3">
+                  <div className="flex items-start justify-between gap-3 text-xs">
+                    <span className="line-clamp-2 text-slate-200">{row.filename}</span>
+                    <span className="metric-mono shrink-0 text-slate-100">{row.touches}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-[11px] text-slate-400">
+                    <span className="metric-mono text-emerald-300">+{row.additions}</span>
+                    <span className="metric-mono text-rose-300">-{row.deletions}</span>
+                    <div className="ml-auto h-1.5 w-20 overflow-hidden rounded-sm border border-border/70 bg-[#0f141b]">
+                      <div
+                        className="h-1.5 bg-[#ff8f5d]"
+                        style={{ width: `${Math.max(5, Math.round((row.touches / maxTouches) * 100))}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

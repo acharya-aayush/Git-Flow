@@ -1,10 +1,8 @@
-import { PrismaClient } from '@gitflow/db';
 import { Card, Metric, Text, Title } from '@tremor/react';
 import { getWindowStart, parseDashboardWindow, type DashboardWindow } from '@/lib/dashboard-window';
+import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
-
-const prisma = new PrismaClient();
 
 type ContributorsSearchParams = {
   repo?: string;
