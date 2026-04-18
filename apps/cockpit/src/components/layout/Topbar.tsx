@@ -93,7 +93,7 @@ function RepositorySearchControl({
             autoApplyRepositoryQuery(repoSearch);
           }}
           placeholder="Type repository name..."
-          className="w-full rounded-sm border border-border bg-[#10141a] pl-7 pr-7 py-1.5 text-xs text-slate-200 outline-none"
+          className="w-full rounded-md border border-border bg-[#0d1117] py-1.5 pl-7 pr-7 text-xs text-slate-200 outline-none focus:border-[#2f81f7]"
         />
         {repoSearch ? (
           <button
@@ -187,9 +187,9 @@ export function Topbar() {
   }, [livePRs, router]);
 
   return (
-    <header className="relative z-20 flex min-h-[72px] w-full flex-col gap-3 border-b border-border/70 bg-[#161b22]/85 px-4 py-3 backdrop-blur-sm sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+    <header className="relative z-20 flex min-h-[72px] w-full flex-col gap-3 border-b border-border bg-[#0d1117] px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
       <div>
-        <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">GitFlow Analytics</p>
+        <p className="text-xs text-slate-400">GitFlow Analytics</p>
         <h1 className="mt-1 text-xl font-semibold text-slate-100">{title}</h1>
       </div>
 
@@ -206,7 +206,7 @@ export function Topbar() {
           <select
             value={selectedWindow}
             onChange={(event) => onWindowChange(event.target.value)}
-            className="rounded-sm border border-border bg-[#10141a] px-2 py-1 text-xs text-slate-100 outline-none"
+            className="rounded-md border border-border bg-[#0d1117] px-2 py-1 text-xs text-slate-100 outline-none focus:border-[#2f81f7]"
           >
             <option value="7d">7d</option>
             <option value="30d">30d</option>
@@ -217,16 +217,16 @@ export function Topbar() {
 
         <div className="boneyard-bar hidden items-center gap-2 px-3 py-1.5 text-xs text-slate-300 sm:flex">
           <DotFillIcon size={12} className="text-slate-400" />
-          Unified Metrics View
+          Unified metrics view
         </div>
 
-        <div className={`boneyard-bar flex items-center gap-2 px-3 py-1.5 text-xs font-medium ${isConnected ? 'border-emerald-500/45 bg-emerald-500/10 text-emerald-300' : 'border-amber-500/45 bg-amber-500/10 text-amber-200'}`}>
-          <PulseIcon size={13} className={`${isConnected ? 'animate-pulse text-emerald-300' : 'text-amber-300'}`} />
-          {isConnected ? 'Stream Online' : 'Disconnected'}
+        <div className={`boneyard-bar flex items-center gap-2 px-3 py-1.5 text-xs font-medium ${isConnected ? 'text-[#3fb950]' : 'text-[#d29922]'}`}>
+          <PulseIcon size={13} className={`${isConnected ? 'text-[#3fb950]' : 'text-[#d29922]'}`} />
+          {isConnected ? 'Stream online' : 'Disconnected'}
         </div>
 
         {connectionError ? (
-          <div className="boneyard-bar border-red-500/35 bg-red-500/10 px-3 py-1.5 text-xs text-red-200">
+          <div className="boneyard-bar border-[#da3633] px-3 py-1.5 text-xs text-[#f85149]">
             {connectionError}
           </div>
         ) : null}

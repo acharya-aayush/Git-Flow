@@ -34,10 +34,10 @@ export function Sidebar() {
   const activeQuery = searchParams.toString();
 
   return (
-    <aside className="hidden h-full w-[270px] shrink-0 border-r border-border/80 bg-[#161b22]/95 lg:flex lg:flex-col">
+    <aside className="hidden h-full w-[270px] shrink-0 border-r border-border bg-[#0d1117] lg:flex lg:flex-col">
       <div className="border-b border-border/70 px-5 py-5">
         <FloPanda className="mb-3" />
-        <p className="text-[11px] uppercase tracking-[0.24em] text-slate-400">Engineering Control Room</p>
+        <p className="text-xs text-slate-400">Engineering control room</p>
       </div>
 
       <div className="flex flex-1 flex-col overflow-y-auto px-4 py-5">
@@ -51,15 +51,15 @@ export function Sidebar() {
                 href={hrefWithQuery}
                 className={classNames(
                   isActive
-                    ? 'bg-blue-500/15 text-blue-200 border border-blue-400/30'
-                    : 'text-slate-300 hover:bg-white/5 hover:text-white border border-transparent',
+                    ? 'border border-border bg-[#21262d] text-[#f0f6fc]'
+                    : 'border border-transparent text-slate-300 hover:border-border hover:bg-[#161b22] hover:text-[#f0f6fc]',
                   'group flex items-center rounded-sm px-3 py-2.5 text-sm font-medium transition-all'
                 )}
               >
                 <item.icon
                   size={14}
                   className={classNames(
-                    isActive ? 'text-blue-200' : 'text-slate-400 group-hover:text-slate-100',
+                    isActive ? 'text-[#f0f6fc]' : 'text-slate-400 group-hover:text-slate-200',
                     'mr-3 flex-shrink-0'
                   )}
                   aria-hidden="true"
@@ -70,9 +70,9 @@ export function Sidebar() {
           })}
         </nav>
 
-        <div className="mt-auto rounded-sm border border-blue-400/20 bg-blue-500/5 p-3 text-xs text-slate-300">
-          <p className="font-semibold uppercase tracking-wide text-blue-200">Live Scope</p>
-          <p className="mt-1 leading-relaxed text-slate-400">Historical + real-time pull request telemetry across connected repositories.</p>
+        <div className="mt-auto rounded-md border border-border bg-[#161b22] p-3 text-xs text-slate-300">
+          <p className="font-semibold text-slate-200">Live scope</p>
+          <p className="mt-1 leading-relaxed text-slate-400">Historical and real-time pull request telemetry across connected repositories.</p>
         </div>
       </div>
     </aside>
