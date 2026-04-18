@@ -55,7 +55,7 @@ export default async function HeatmapPage({
     .sort((a, b) => b.touches - a.touches)
     .slice(0, 60);
 
-  const maxTouches = rows.length ? rows[0].touches : 1;
+  const maxTouches = rows.length ? rows[0].touches : 0;
 
   return (
     <div className="space-y-5 py-2">
@@ -99,7 +99,12 @@ export default async function HeatmapPage({
         </div>
         <div className="panel-body space-y-3">
           {rows.length === 0 ? (
-            <Text className="text-slate-400">No commit file-change records available yet for this scope.</Text>
+            <div className="space-y-2">
+              <Text className="text-slate-400">No commit file-change records available yet for this scope.</Text>
+              <Text className="text-xs text-slate-500">
+                If this repository has recent commits, confirm GitHub App push events are subscribed and the app has Contents read access.
+              </Text>
+            </div>
           ) : (
             rows.map((row) => (
               <div key={row.filename} className="rounded-lg border border-border/70 bg-[#0d1117] p-3">
