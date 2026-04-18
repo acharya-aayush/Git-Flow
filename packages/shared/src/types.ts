@@ -44,6 +44,40 @@ export interface GitHubReviewRef {
   submitted_at: string;
 }
 
+export interface GitHubPushCommitRef {
+  id: string;
+  message: string;
+  timestamp: string;
+  added?: string[];
+  removed?: string[];
+  modified?: string[];
+  author?: {
+    name?: string;
+    email?: string;
+    username?: string;
+  };
+}
+
+export interface GitHubIssueRef {
+  id: number;
+  number: number;
+  title: string;
+  state: string;
+  created_at: string;
+  updated_at: string;
+  closed_at?: string | null;
+  user?: {
+    login: string;
+  };
+  assignee?: {
+    login: string;
+  } | null;
+  labels?: Array<{
+    name: string;
+    color?: string;
+  }>;
+}
+
 export interface PullRequestWebhookPayload {
   action: string;
   pull_request: GitHubPullRequestRef;
@@ -61,9 +95,31 @@ export interface PullRequestReviewWebhookPayload {
   [key: string]: unknown;
 }
 
+export interface PushWebhookPayload {
+  ref: string;
+  repository: GitHubRepositoryRef;
+  pusher?: {
+    name?: string;
+    email?: string;
+  };
+  sender?: GitHubUserRef;
+  commits: GitHubPushCommitRef[];
+  [key: string]: unknown;
+}
+
+export interface IssueWebhookPayload {
+  action: string;
+  issue: GitHubIssueRef;
+  repository: GitHubRepositoryRef;
+  sender: GitHubUserRef;
+  [key: string]: unknown;
+}
+
 export type GitHubWebhookPayload =
   | PullRequestWebhookPayload
   | PullRequestReviewWebhookPayload
+  | PushWebhookPayload
+  | IssueWebhookPayload
   | Record<string, unknown>;
 
 export interface DashboardPrUpdatePayload {
@@ -79,6 +135,26 @@ export interface DashboardPrUpdateEvent {
   timestamp: string;
 }
 
+export type RepoActivityKind = 'push' | 'pull_request' | 'pull_request_review' | 'issue';
+
+export interface DashboardRepoActivityPayload {
+  repo: string;
+  kind: RepoActivityKind;
+  action: string;
+  actor?: string;
+  number?: number;
+  title?: string;
+  sha?: string;
+  message?: string;
+  state?: string;
+}
+
+export interface DashboardRepoActivityEvent {
+  type: 'REPO_ACTIVITY';
+  payload: DashboardRepoActivityPayload;
+  timestamp: string;
+}
+
 export interface PRStreamEvent {
   id: string;
   action: string;
@@ -86,6 +162,21 @@ export interface PRStreamEvent {
   repo: string;
   state?: string;
   timestamp: string;
+  source?: 'live' | 'history';
+}
+
+export interface RepoActivityEvent {
+  id: string;
+  repo: string;
+  kind: RepoActivityKind;
+  action: string;
+  timestamp: string;
+  actor?: string;
+  number?: number;
+  title?: string;
+  sha?: string;
+  message?: string;
+  state?: string;
   source?: 'live' | 'history';
 }
 

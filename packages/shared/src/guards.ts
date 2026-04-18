@@ -1,6 +1,10 @@
 import type {
+  DashboardRepoActivityEvent,
   DashboardPrUpdateEvent,
   PRStreamEvent,
+  RepoActivityEvent,
+  IssueWebhookPayload,
+  PushWebhookPayload,
   PullRequestReviewWebhookPayload,
   PullRequestWebhookPayload,
 } from './types';
@@ -51,6 +55,39 @@ export function isPullRequestReviewWebhookPayload(payload: unknown): payload is 
   return isString(review.state) && isString(review.submitted_at);
 }
 
+export function isPushWebhookPayload(payload: unknown): payload is PushWebhookPayload {
+  if (!isObject(payload)) return false;
+
+  const repository = payload.repository;
+  if (!isObject(repository)) return false;
+
+  return (
+    isString(payload.ref) &&
+    isNumber(repository.id) &&
+    isString(repository.full_name) &&
+    Array.isArray(payload.commits)
+  );
+}
+
+export function isIssueWebhookPayload(payload: unknown): payload is IssueWebhookPayload {
+  if (!isObject(payload)) return false;
+
+  const repository = payload.repository;
+  const issue = payload.issue;
+
+  if (!isObject(repository) || !isObject(issue)) return false;
+
+  return (
+    isString(payload.action) &&
+    isNumber(repository.id) &&
+    isString(repository.full_name) &&
+    isNumber(issue.id) &&
+    isNumber(issue.number) &&
+    isString(issue.title) &&
+    isString(issue.state)
+  );
+}
+
 export function isDashboardPrUpdateEvent(value: unknown): value is DashboardPrUpdateEvent {
   if (!isObject(value)) return false;
   if (value.type !== 'PR_UPDATE') return false;
@@ -60,6 +97,17 @@ export function isDashboardPrUpdateEvent(value: unknown): value is DashboardPrUp
   if (!isObject(payload)) return false;
 
   return isNumber(payload.number) && isString(payload.repo);
+}
+
+export function isDashboardRepoActivityEvent(value: unknown): value is DashboardRepoActivityEvent {
+  if (!isObject(value)) return false;
+  if (value.type !== 'REPO_ACTIVITY') return false;
+  if (!isString(value.timestamp)) return false;
+
+  const payload = value.payload;
+  if (!isObject(payload)) return false;
+
+  return isString(payload.repo) && isString(payload.kind) && isString(payload.action);
 }
 
 export function toPRStreamEvent(event: DashboardPrUpdateEvent): PRStreamEvent {
@@ -74,6 +122,23 @@ export function toPRStreamEvent(event: DashboardPrUpdateEvent): PRStreamEvent {
   };
 }
 
+export function toRepoActivityEvent(event: DashboardRepoActivityEvent): RepoActivityEvent {
+  return {
+    id: `live-${event.payload.repo}-${event.payload.kind}-${event.payload.action}-${event.timestamp}`,
+    repo: event.payload.repo,
+    kind: event.payload.kind,
+    action: event.payload.action,
+    timestamp: event.timestamp,
+    actor: event.payload.actor,
+    number: event.payload.number,
+    title: event.payload.title,
+    sha: event.payload.sha,
+    message: event.payload.message,
+    state: event.payload.state,
+    source: 'live',
+  };
+}
+
 export function isPRStreamEvent(value: unknown): value is PRStreamEvent {
   if (!isObject(value)) return false;
 
@@ -82,6 +147,18 @@ export function isPRStreamEvent(value: unknown): value is PRStreamEvent {
     isString(value.action) &&
     isNumber(value.number) &&
     isString(value.repo) &&
+    isString(value.timestamp)
+  );
+}
+
+export function isRepoActivityEvent(value: unknown): value is RepoActivityEvent {
+  if (!isObject(value)) return false;
+
+  return (
+    isString(value.id) &&
+    isString(value.repo) &&
+    isString(value.kind) &&
+    isString(value.action) &&
     isString(value.timestamp)
   );
 }

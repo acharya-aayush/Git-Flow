@@ -40,6 +40,8 @@ model Repository {
   created_at  DateTime @default(now()) @db.Timestamptz()
   
   pull_requests PullRequest[]
+  commits       Commit[]
+  issues        Issue[]
 
   @@map("repositories")
 }
@@ -59,6 +61,7 @@ model PullRequest {
   updated_at            DateTime?   @db.Timestamptz()
   closed_at             DateTime?   @db.Timestamptz()
   merged_at             DateTime?   @db.Timestamptz()
+  merged_by_login       String?
   first_review_at       DateTime?   @db.Timestamptz()
   review_latency_mins   Int?
   merge_time_mins       Int?
@@ -98,4 +101,64 @@ model Event {
   payload_hash     String
 
   @@map("events")
+}
+
+model Commit {
+  id            String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  repo_id       String             @db.Uuid
+  repository    Repository         @relation(fields: [repo_id], references: [id])
+  sha           String
+  message       String
+  author_name   String?
+  author_email  String?
+  author_login  String?
+  committed_at  DateTime           @db.Timestamptz()
+  additions     Int                @default(0)
+  deletions     Int                @default(0)
+  changed_files Int                @default(0)
+  created_at    DateTime           @default(now()) @db.Timestamptz()
+
+  file_changes  CommitFileChange[]
+
+  @@unique([repo_id, sha])
+  @@index([repo_id, committed_at(sort: Desc)])
+  @@index([author_login])
+  @@map("commits")
+}
+
+model CommitFileChange {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  commit_id  String   @db.Uuid
+  commit     Commit   @relation(fields: [commit_id], references: [id], onDelete: Cascade)
+  filename   String
+  status     String?
+  additions  Int      @default(0)
+  deletions  Int      @default(0)
+  changes    Int      @default(0)
+
+  @@index([filename])
+  @@index([commit_id])
+  @@map("commit_file_changes")
+}
+
+model Issue {
+  id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  github_id        BigInt      @unique
+  repo_id          String      @db.Uuid
+  repository       Repository  @relation(fields: [repo_id], references: [id])
+  number           Int
+  title            String
+  state            String
+  author_login     String?
+  assignee_login   String?
+  labels           Json?
+  created_at       DateTime    @db.Timestamptz()
+  updated_at       DateTime?   @db.Timestamptz()
+  closed_at        DateTime?   @db.Timestamptz()
+  resolution_mins  Int?
+
+  @@unique([repo_id, number])
+  @@index([repo_id, created_at(sort: Desc)])
+  @@index([state])
+  @@map("issues")
 }
