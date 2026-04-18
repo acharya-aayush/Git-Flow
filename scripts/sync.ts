@@ -33,7 +33,9 @@ async function sync() {
     }
   });
 
-  const { data: installations } = await octokitApp.apps.listInstallations();
+  const installations = await octokitApp.paginate(octokitApp.apps.listInstallations, {
+    per_page: 100,
+  });
   console.log(`Found ${installations.length} installations.`);
   
   if (installations.length === 0) {
@@ -51,7 +53,11 @@ async function sync() {
 
     const octokit = new Octokit({ auth: authData.token });
 
-    const { data: { repositories } } = await octokit.apps.listReposAccessibleToInstallation();
+    const repositories = await octokit.paginate(octokit.apps.listReposAccessibleToInstallation, {
+      per_page: 100,
+    });
+
+    console.log(`-> Found ${repositories.length} accessible repositories for installation ${installation.id}`);
     
     for (const repo of repositories) {
       console.log(`Syncing Repository: ${repo.full_name}`);
@@ -263,8 +269,10 @@ async function sync() {
         }
 
         console.log(`-> Added/Updated ${syncedCommits} recent commits and file changes`);
-      } catch (err) {
-        console.log(`Failed syncing commits for ${repo.full_name}`);
+      } catch (err: any) {
+        const status = err?.status || err?.code || 'unknown';
+        const message = err?.message || 'unknown error';
+        console.log(`Failed syncing commits for ${repo.full_name} (${status}): ${message}`);
       }
 
       try {
@@ -323,8 +331,10 @@ async function sync() {
         }
 
         console.log(`-> Added/Updated ${syncedIssues} issues`);
-      } catch (err) {
-        console.log(`Failed syncing issues for ${repo.full_name}`);
+      } catch (err: any) {
+        const status = err?.status || err?.code || 'unknown';
+        const message = err?.message || 'unknown error';
+        console.log(`Failed syncing issues for ${repo.full_name} (${status}): ${message}`);
       }
     }
   }
