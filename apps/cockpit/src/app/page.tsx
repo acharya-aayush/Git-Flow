@@ -24,10 +24,14 @@ type OverviewSearchParams = {
 export default async function ExecutiveOverview({
   searchParams,
 }: {
-  searchParams?: OverviewSearchParams;
+  searchParams: Promise<OverviewSearchParams>;
 }) {
-  const repoFilter = searchParams?.repo && searchParams.repo !== 'all' ? searchParams.repo : undefined;
-  const selectedWindow = parseDashboardWindow(searchParams?.window);
+  const resolvedSearchParams = await searchParams;
+  const repoFilter =
+    resolvedSearchParams.repo && resolvedSearchParams.repo !== 'all'
+      ? resolvedSearchParams.repo
+      : undefined;
+  const selectedWindow = parseDashboardWindow(resolvedSearchParams.window);
   const windowStart = getWindowStart(selectedWindow, new Date());
 
   const scopedRepo = repoFilter
