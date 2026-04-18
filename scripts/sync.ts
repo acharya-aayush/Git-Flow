@@ -192,6 +192,140 @@ async function sync() {
         }
       }
       console.log(`-> Added/Updated ${added} PRs and their reviews!`);
+
+      try {
+        const { data: commitSummaries } = await octokit.repos.listCommits({
+          owner: repo.owner.login,
+          repo: repo.name,
+          per_page: 20,
+        });
+
+        let syncedCommits = 0;
+
+        for (const summary of commitSummaries) {
+          const { data: commitDetail } = await octokit.repos.getCommit({
+            owner: repo.owner.login,
+            repo: repo.name,
+            ref: summary.sha,
+          });
+
+          const files = commitDetail.files || [];
+          const additions = files.reduce((sum, file) => sum + (file.additions || 0), 0);
+          const deletions = files.reduce((sum, file) => sum + (file.deletions || 0), 0);
+
+          const commitRow = await prisma.commit.upsert({
+            where: {
+              repo_id_sha: {
+                repo_id: dbRepo.id,
+                sha: commitDetail.sha,
+              },
+            },
+            create: {
+              repo_id: dbRepo.id,
+              sha: commitDetail.sha,
+              message: commitDetail.commit.message,
+              author_name: commitDetail.commit.author?.name || null,
+              author_email: commitDetail.commit.author?.email || null,
+              author_login: commitDetail.author?.login || commitDetail.commit.author?.name || null,
+              committed_at: new Date(commitDetail.commit.author?.date || commitDetail.commit.committer?.date || Date.now()),
+              additions,
+              deletions,
+              changed_files: files.length,
+            },
+            update: {
+              message: commitDetail.commit.message,
+              author_name: commitDetail.commit.author?.name || null,
+              author_email: commitDetail.commit.author?.email || null,
+              author_login: commitDetail.author?.login || commitDetail.commit.author?.name || null,
+              committed_at: new Date(commitDetail.commit.author?.date || commitDetail.commit.committer?.date || Date.now()),
+              additions,
+              deletions,
+              changed_files: files.length,
+            },
+          });
+
+          await prisma.commitFileChange.deleteMany({ where: { commit_id: commitRow.id } });
+
+          if (files.length > 0) {
+            await prisma.commitFileChange.createMany({
+              data: files.map((file) => ({
+                commit_id: commitRow.id,
+                filename: file.filename,
+                status: file.status || null,
+                additions: file.additions || 0,
+                deletions: file.deletions || 0,
+                changes: file.changes || 0,
+              })),
+            });
+          }
+
+          syncedCommits += 1;
+        }
+
+        console.log(`-> Added/Updated ${syncedCommits} recent commits and file changes`);
+      } catch (err) {
+        console.log(`Failed syncing commits for ${repo.full_name}`);
+      }
+
+      try {
+        const { data: issueRows } = await octokit.issues.listForRepo({
+          owner: repo.owner.login,
+          repo: repo.name,
+          state: 'all',
+          per_page: 50,
+        });
+
+        const plainIssues = issueRows.filter((item) => !('pull_request' in item));
+        let syncedIssues = 0;
+
+        for (const issue of plainIssues) {
+          const createdAt = new Date(issue.created_at);
+          const closedAt = issue.closed_at ? new Date(issue.closed_at) : null;
+          const resolutionMins = closedAt
+            ? Math.max(0, Math.floor((closedAt.getTime() - createdAt.getTime()) / (1000 * 60)))
+            : null;
+
+          const labels = (issue.labels || [])
+            .map((label) => (typeof label === 'string' ? label : label.name || ''))
+            .filter((name) => Boolean(name));
+
+          await prisma.issue.upsert({
+            where: { github_id: issue.id },
+            create: {
+              github_id: issue.id,
+              repo_id: dbRepo.id,
+              number: issue.number,
+              title: issue.title,
+              state: issue.state,
+              author_login: issue.user?.login || null,
+              assignee_login: issue.assignee?.login || null,
+              labels,
+              created_at: createdAt,
+              updated_at: new Date(issue.updated_at),
+              closed_at: closedAt,
+              resolution_mins: resolutionMins,
+            },
+            update: {
+              repo_id: dbRepo.id,
+              number: issue.number,
+              title: issue.title,
+              state: issue.state,
+              author_login: issue.user?.login || null,
+              assignee_login: issue.assignee?.login || null,
+              labels,
+              updated_at: new Date(issue.updated_at),
+              closed_at: closedAt,
+              resolution_mins: resolutionMins,
+            },
+          });
+
+          syncedIssues += 1;
+        }
+
+        console.log(`-> Added/Updated ${syncedIssues} issues`);
+      } catch (err) {
+        console.log(`Failed syncing issues for ${repo.full_name}`);
+      }
     }
   }
 
