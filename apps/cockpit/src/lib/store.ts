@@ -1,13 +1,15 @@
 import { create } from 'zustand';
-import type { PRStreamEvent } from '@gitflow/shared';
+import type { PRStreamEvent, RepoActivityEvent } from '@gitflow/shared';
 
 type InitialData = Partial<{
   livePRs: PRStreamEvent[];
+  liveActivities: RepoActivityEvent[];
   doraMetrics: Record<string, unknown>;
 }>;
 
 interface GitFlowState {
   livePRs: PRStreamEvent[];
+  liveActivities: RepoActivityEvent[];
   doraMetrics: Record<string, unknown>;
   isConnected: boolean;
   connectionError: string | null;
@@ -21,11 +23,13 @@ interface GitFlowState {
   setLastMessageAt: (timestamp: string) => void;
   addWsLog: (message: string) => void;
   addLivePR: (pr: PRStreamEvent) => void;
+  addLiveActivity: (activity: RepoActivityEvent) => void;
   setInitialData: (data: InitialData) => void;
 }
 
 export const useGitFlowStore = create<GitFlowState>((set) => ({
   livePRs: [],
+  liveActivities: [],
   doraMetrics: {},
   isConnected: false,
   connectionError: null,
@@ -46,5 +50,10 @@ export const useGitFlowStore = create<GitFlowState>((set) => ({
     const updated = [pr, ...state.livePRs].slice(0, 50);
     return { livePRs: updated };
   }),
+  addLiveActivity: (activity) =>
+    set((state) => {
+      const updated = [activity, ...state.liveActivities].slice(0, 150);
+      return { liveActivities: updated };
+    }),
   setInitialData: (data) => set((state) => ({ ...state, ...data })),
 }));

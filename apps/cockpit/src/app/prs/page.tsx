@@ -1,17 +1,17 @@
 'use client';
 import { Title, Text, Card } from '@tremor/react';
 import { useGitFlowStore } from '@/lib/store';
-import { PRLiveCard } from '@/components/dashboard/PRLiveCard';
+import { RepoActivityCard } from '@/components/dashboard/RepoActivityCard';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { isPRStreamEvent, type PRStreamEvent } from '@gitflow/shared';
+import { isRepoActivityEvent, type RepoActivityEvent } from '@gitflow/shared';
 import { combineAndSortEvents, filterEventsByRepo } from '@/lib/live-events';
 
 function PRsLiveContent() {
   const sentinelHealthUrl = process.env.NEXT_PUBLIC_SENTINEL_HEALTH_URL || 'http://localhost:3001/health';
   const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001/ws';
 
-  const livePRs = useGitFlowStore((state) => state.livePRs);
+  const liveActivities = useGitFlowStore((state) => state.liveActivities);
   const isConnected = useGitFlowStore((state) => state.isConnected);
   const connectionError = useGitFlowStore((state) => state.connectionError);
   const reconnectAttempts = useGitFlowStore((state) => state.reconnectAttempts);
@@ -20,7 +20,7 @@ function PRsLiveContent() {
   const searchParams = useSearchParams();
   const [healthStatus, setHealthStatus] = useState<'unknown' | 'ok' | 'down'>('unknown');
   const [healthMessage, setHealthMessage] = useState('not checked yet');
-  const [historyEvents, setHistoryEvents] = useState<PRStreamEvent[]>([]);
+  const [historyEvents, setHistoryEvents] = useState<RepoActivityEvent[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyError, setHistoryError] = useState<string | null>(null);
 
@@ -42,7 +42,7 @@ function PRsLiveContent() {
           params.set('repo', repoFilter);
         }
 
-        const response = await fetch(`/api/live-events?${params.toString()}`, {
+        const response = await fetch(`/api/repo-activity?${params.toString()}`, {
           method: 'GET',
           cache: 'no-store',
         });
@@ -55,7 +55,7 @@ function PRsLiveContent() {
         if (!active) return;
 
         const incoming = Array.isArray(data.events)
-          ? data.events.filter(isPRStreamEvent)
+          ? data.events.filter(isRepoActivityEvent)
           : [];
         setHistoryEvents(incoming);
       } catch (error) {
@@ -77,8 +77,8 @@ function PRsLiveContent() {
   }, [repoFilter, windowFilter]);
 
   const combinedEvents = useMemo(() => {
-    return combineAndSortEvents(livePRs, historyEvents);
-  }, [historyEvents, livePRs]);
+    return combineAndSortEvents(liveActivities, historyEvents);
+  }, [historyEvents, liveActivities]);
 
   const visibleEvents = useMemo(() => {
     return filterEventsByRepo(combinedEvents, repoFilter);
@@ -121,8 +121,8 @@ function PRsLiveContent() {
         <div className="panel-body flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Realtime Stream</p>
-            <Title className="mt-2 text-3xl font-semibold tracking-tight text-slate-100">Pull Request Event Wall</Title>
-            <Text className="mt-2 text-sm text-slate-300/85">Webhook activity from Sentinel rendered as a chronological event feed.</Text>
+            <Title className="mt-2 text-3xl font-semibold tracking-tight text-slate-100">Repository Activity Wall</Title>
+            <Text className="mt-2 text-sm text-slate-300/85">Live stream of commits, pull requests, reviews, and issues from webhook events.</Text>
             <Text className="mt-2 inline-flex rounded-md border border-border bg-[#0d1117] px-2 py-1 text-xs text-slate-300">
               Scope: {repoFilter || 'All repositories'}
             </Text>
@@ -176,6 +176,9 @@ function PRsLiveContent() {
             <div className="rounded-md border border-border bg-[#0d1117] px-2 py-1.5 text-xs text-slate-300">
               {historyError ? `history sync failed: ${historyError}` : healthMessage}
             </div>
+            <div className="rounded-md border border-border bg-[#0d1117] px-2 py-1.5 text-xs text-slate-300">
+              Live total: {liveActivities.length}
+            </div>
           </div>
         </Card>
 
@@ -206,7 +209,7 @@ function PRsLiveContent() {
               <Text className="mb-4 text-slate-300">
                 {repoFilter && repoFilter !== 'all'
                   ? `No events found yet for ${repoFilter} in ${windowFilter}.`
-                  : 'No events found yet. Listening for incoming webhook events...'}
+                    : 'No events found yet. Push commits, create PRs, or open issues to populate this feed.'}
               </Text>
               <div className="flex justify-center gap-2">
                 <div className="h-2.5 w-2.5 animate-pulse rounded-full bg-cyan-300/70" />
@@ -216,8 +219,8 @@ function PRsLiveContent() {
             </div>
           </Card>
         ) : (
-          visibleEvents.map((pr) => (
-            <PRLiveCard key={pr.id} pr={pr} />
+          visibleEvents.map((event) => (
+            <RepoActivityCard key={event.id} event={event} />
           ))
         )}
       </section>

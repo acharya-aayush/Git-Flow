@@ -1,14 +1,14 @@
-import type { PRStreamEvent } from '@gitflow/shared';
+import type { RepoActivityEvent } from '@gitflow/shared';
 
 export function combineAndSortEvents(
-  liveEvents: PRStreamEvent[],
-  historyEvents: PRStreamEvent[]
-): PRStreamEvent[] {
-  const map = new Map<string, PRStreamEvent>();
+  liveEvents: RepoActivityEvent[],
+  historyEvents: RepoActivityEvent[]
+): RepoActivityEvent[] {
+  const map = new Map<string, RepoActivityEvent>();
 
   for (const event of [...liveEvents, ...historyEvents]) {
     const repo = event.repo.trim();
-    const key = `${event.action}|${repo.toLowerCase()}|${event.number}|${event.timestamp}`;
+    const key = `${event.kind}|${event.action}|${repo.toLowerCase()}|${event.number || ''}|${event.sha || ''}|${event.timestamp}`;
 
     if (!map.has(key)) {
       map.set(key, {
@@ -23,7 +23,7 @@ export function combineAndSortEvents(
   );
 }
 
-export function filterEventsByRepo(events: PRStreamEvent[], repoFilter: string | null): PRStreamEvent[] {
+export function filterEventsByRepo(events: RepoActivityEvent[], repoFilter: string | null): RepoActivityEvent[] {
   if (!repoFilter || repoFilter === 'all') {
     return events;
   }

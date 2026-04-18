@@ -1,5 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { isDashboardPrUpdateEvent, toPRStreamEvent } from '@gitflow/shared';
+import {
+  isDashboardPrUpdateEvent,
+  isDashboardRepoActivityEvent,
+  toPRStreamEvent,
+  toRepoActivityEvent,
+} from '@gitflow/shared';
 import { useGitFlowStore } from './store';
 
 export function useWebsocket(url: string) {
@@ -10,6 +15,7 @@ export function useWebsocket(url: string) {
   const setLastMessageAt = useGitFlowStore((state) => state.setLastMessageAt);
   const addWsLog = useGitFlowStore((state) => state.addWsLog);
   const addLivePR = useGitFlowStore((state) => state.addLivePR);
+  const addLiveActivity = useGitFlowStore((state) => state.addLiveActivity);
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
@@ -31,13 +37,30 @@ export function useWebsocket(url: string) {
         try {
           const data: unknown = JSON.parse(event.data as string);
           setLastMessageAt(new Date().toISOString());
-          if (!isDashboardPrUpdateEvent(data)) {
-            addWsLog('ignored non PR_UPDATE message');
+
+          if (isDashboardRepoActivityEvent(data)) {
+            addWsLog(`message received: ${data.type}`);
+            addLiveActivity(toRepoActivityEvent(data));
             return;
           }
 
-          addWsLog(`message received: ${data.type}`);
-          addLivePR(toPRStreamEvent(data));
+          if (isDashboardPrUpdateEvent(data)) {
+            addWsLog(`message received: ${data.type}`);
+            addLivePR(toPRStreamEvent(data));
+            addLiveActivity({
+              id: `live-${data.payload.repo}-pull_request-${data.action}-${data.timestamp}`,
+              repo: data.payload.repo,
+              kind: data.action.includes('review') ? 'pull_request_review' : 'pull_request',
+              action: data.action,
+              timestamp: data.timestamp,
+              number: data.payload.number,
+              state: data.payload.state,
+              source: 'live',
+            });
+            return;
+          }
+
+          addWsLog('ignored unknown message type');
         } catch (e) {
           const msg = e instanceof Error ? e.message : 'Unknown parse error';
           addWsLog(`parse error: ${msg}`);
@@ -78,5 +101,6 @@ export function useWebsocket(url: string) {
     setLastMessageAt,
     addWsLog,
     addLivePR,
+    addLiveActivity,
   ]);
 }
