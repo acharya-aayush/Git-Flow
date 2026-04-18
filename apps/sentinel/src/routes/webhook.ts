@@ -9,7 +9,7 @@ export const webhookRouter = Router();
 const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
 const webhookQueue = createWebhookQueue(redisUrl);
 const allowedWebhookEvents = new Set(
-  (process.env.ALLOWED_GITHUB_EVENTS || 'pull_request,pull_request_review')
+  (process.env.ALLOWED_GITHUB_EVENTS || 'pull_request,pull_request_review,push,issues')
     .split(',')
     .map((event) => event.trim())
     .filter(Boolean)
