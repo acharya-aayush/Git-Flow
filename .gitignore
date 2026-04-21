@@ -32,3 +32,9 @@ tasks.md
 
 # Local planning docs
 documentation/
+
+# Generated knowledge graph artifacts
+knowledge/obsidian-vault/notes/
+knowledge/obsidian-vault/graph-data.json
+knowledge/rag/chunks.json
+knowledge/rag/manifest.json

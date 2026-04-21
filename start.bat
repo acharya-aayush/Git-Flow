@@ -35,5 +35,6 @@ if "%NGROK_DOMAIN%"=="" (
 
 echo.
 echo 3. Starting Sentinel, Auditor, and Cockpit Dashboard...
+start "Obsidian Graph Watcher" cmd /k "npm run graph:watch"
 set NO_UPDATE_NOTIFIER=1
 npm run dev

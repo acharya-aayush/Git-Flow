@@ -24,6 +24,8 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,md}\"",
     "sync": "npx ts-node scripts/sync.ts",
     "check:events": "npx ts-node scripts/check-events.ts",
+    "graph:build": "node scripts/generate-obsidian-graph.cjs",
+    "graph:watch": "node scripts/watch-obsidian-graph.cjs",
     "db:push": "turbo run db:push",
     "db:generate": "turbo run db:generate"
   },
