@@ -1,20 +1,20 @@
 ---
-generated_at: 2026-04-21T05:09:20.826Z
-snapshot: 0d64e66
-folder_count: 261
-file_count: 1350
-import_edge_count: 987
-chunk_count: 7922
+generated_at: 2026-04-21T05:14:13.918Z
+snapshot: d6c5713
+folder_count: 268
+file_count: 1355
+import_edge_count: 988
+chunk_count: 7939
 ---
 
 # Project Graph
 
 - Workspace root: `D:\Aayush_Acharya\GitFlow`
-- Snapshot: `0d64e66`
-- Folders indexed: **261**
-- Files indexed: **1350**
-- Import edges: **987**
-- RAG chunks: **7922**
+- Snapshot: `d6c5713`
+- Folders indexed: **268**
+- Files indexed: **1355**
+- Import edges: **988**
+- RAG chunks: **7939**
 
 ## Top-level domains
 

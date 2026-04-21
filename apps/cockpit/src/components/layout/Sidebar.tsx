@@ -10,6 +10,7 @@ import {
   PeopleIcon,
   PulseIcon,
   QuestionIcon,
+  RepoIcon,
 } from '@primer/octicons-react';
 import { FloPanda } from '../ui/FloPanda';
 
@@ -19,6 +20,7 @@ const navigation = [
   { name: 'Heatmap', href: '/heatmap', icon: FlameIcon },
   { name: 'Issues', href: '/issues', icon: QuestionIcon },
   { name: 'Contributors', href: '/contributors', icon: PeopleIcon },
+  { name: 'Knowledge', href: '/knowledge', icon: RepoIcon },
   { name: 'Bottlenecks', href: '/bottlenecks', icon: AlertIcon },
   { name: 'Realtime Feed', href: '/prs', icon: GitPullRequestIcon },
 ];

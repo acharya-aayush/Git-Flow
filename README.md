@@ -54,6 +54,23 @@ Open `http://localhost:3000` to view the Real-time Dashboard and see your metric
 
 Cockpit is on Next.js 16 and uses ESLint CLI with the flat config exported by `eslint-config-next`.
 
+### 6.1 Knowledge Assistant + Graph
+
+- Open `http://localhost:3000/knowledge` for the knowledge assistant route.
+- Build the Obsidian graph and retrieval index snapshot:
+
+```bash
+npm run graph:build
+```
+
+- Keep it auto-updating while files change:
+
+```bash
+npm run graph:watch
+```
+
+- Open `knowledge/obsidian-vault` as an Obsidian vault and use Graph View.
+
 ### 7. Trigger Webhooks
 Point your GitHub App webhook URL to your Sentinel service using a tunnel (e.g. ngrok or Localtunnel) pointing at port **3001**.
 ```bash

@@ -17,6 +17,7 @@ const TITLES: Record<string, string> = {
   '/heatmap': 'Codebase Heatmap',
   '/issues': 'Issue Resolution',
   '/contributors': 'Contributor Network',
+  '/knowledge': 'Knowledge Assistant',
   '/bottlenecks': 'Bottlenecks',
   '/prs': 'Realtime Repository Feed',
 };
