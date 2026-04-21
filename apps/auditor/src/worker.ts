@@ -35,10 +35,11 @@ const publisher = new Redis(redisUrl);
 const repoRoot = path.resolve(__dirname, '../../..');
 const autoSyncEnabled = (process.env.AUTO_SYNC_ENABLED || 'true').toLowerCase() !== 'false';
 const autoSyncRunOnBoot = (process.env.AUTO_SYNC_RUN_ON_BOOT || 'true').toLowerCase() !== 'false';
-const autoSyncIntervalMinsRaw = Number(process.env.AUTO_SYNC_INTERVAL_MINUTES || '15');
+const defaultAutoSyncIntervalMins = 2;
+const autoSyncIntervalMinsRaw = Number(process.env.AUTO_SYNC_INTERVAL_MINUTES || String(defaultAutoSyncIntervalMins));
 const autoSyncIntervalMins = Number.isFinite(autoSyncIntervalMinsRaw)
   ? Math.max(1, autoSyncIntervalMinsRaw)
-  : 15;
+  : defaultAutoSyncIntervalMins;
 
 let syncInProgress = false;
 

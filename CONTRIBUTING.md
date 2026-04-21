@@ -8,7 +8,6 @@ Beta version is tracked in `BETA_VERSION` using `x.y.z.n` (example: `1.0.0.0`).
 - Show current value: `npm run version:beta:show`
 
 ## Commit Structure
-- Prefer small, atomic commits.
 - Group related file changes in one commit.
 - Use clear messages, for example:
   - `chore(beta): bump to 1.0.0.1`

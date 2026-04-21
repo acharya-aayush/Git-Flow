@@ -70,7 +70,7 @@ Auto-sync controls (from `.env`):
 
 - `AUTO_SYNC_ENABLED` (`true` by default)
 - `AUTO_SYNC_RUN_ON_BOOT` (`true` by default)
-- `AUTO_SYNC_INTERVAL_MINUTES` (`15` by default)
+- `AUTO_SYNC_INTERVAL_MINUTES` (`2` by default)
 
 ## Beta Versioning
 

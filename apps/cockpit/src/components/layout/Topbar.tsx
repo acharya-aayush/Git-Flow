@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useGitFlowStore } from '@/lib/store';
 import { useWebsocket } from '@/lib/websocket';
 import {
@@ -121,11 +121,15 @@ export function Topbar() {
 
   const isConnected = useGitFlowStore((state) => state.isConnected);
   const connectionError = useGitFlowStore((state) => state.connectionError);
-  const livePRs = useGitFlowStore((state) => state.livePRs);
+  const liveActivities = useGitFlowStore((state) => state.liveActivities);
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const title = TITLES[pathname] || 'GitFlow';
+
+  const refreshTimerRef = useRef<number | null>(null);
+  const lastRefreshAtRef = useRef(0);
+  const lastHandledEventIdRef = useRef<string | null>(null);
 
   const [repositories, setRepositories] = useState<string[]>([]);
 
@@ -179,12 +183,41 @@ export function Topbar() {
     };
   }, []);
 
-  // Trigger a full Next.js server component re-render when a new live PR event arrives
+  // Trigger a full Next.js server component re-render on any live activity,
+  // with a small throttle to avoid excessive refresh storms.
   useEffect(() => {
-    if (livePRs.length > 0) {
-      router.refresh();
+    const latest = liveActivities[0];
+    if (!latest || latest.source !== 'live') {
+      return;
     }
-  }, [livePRs, router]);
+
+    if (lastHandledEventIdRef.current === latest.id) {
+      return;
+    }
+
+    lastHandledEventIdRef.current = latest.id;
+
+    const now = Date.now();
+    const minRefreshGapMs = 1200;
+    const waitMs = Math.max(0, minRefreshGapMs - (now - lastRefreshAtRef.current));
+
+    if (refreshTimerRef.current !== null) {
+      window.clearTimeout(refreshTimerRef.current);
+    }
+
+    refreshTimerRef.current = window.setTimeout(() => {
+      lastRefreshAtRef.current = Date.now();
+      router.refresh();
+      refreshTimerRef.current = null;
+    }, waitMs);
+
+    return () => {
+      if (refreshTimerRef.current !== null) {
+        window.clearTimeout(refreshTimerRef.current);
+        refreshTimerRef.current = null;
+      }
+    };
+  }, [liveActivities, router]);
 
   return (
     <header className="relative z-20 flex min-h-[72px] w-full flex-col gap-3 border-b border-border bg-[#0d1117] px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
